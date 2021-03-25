@@ -11,6 +11,7 @@ namespace PrometheusBot.Modules.Fun
 {
     public class FakeQuoteModule : ModuleBase<SocketCommandContext>
     {
+        [Priority(-100)]
         [RandomFakeQuoteCommand]
         public async Task RandomFakeQuote()
         {
