@@ -96,22 +96,10 @@ namespace PrometheusBot.Commands
         {
             public int Compare(MethodInfo x, MethodInfo y)
             {
-                var xPriority = x.GetCustomAttribute<PriorityAttribute>();
-                var yPriority = y.GetCustomAttribute<PriorityAttribute>();
+                int xPriority = x.GetCustomAttribute<PriorityAttribute>()?.Priority ?? 0;
+                int yPriority = y.GetCustomAttribute<PriorityAttribute>()?.Priority ?? 0;
 
-                if (xPriority is null && yPriority is null)
-                {
-                    return 0;
-                }
-                if(x is null)
-                {
-                    return -1;
-                }
-                if(y is null)
-                {
-                    return 1;
-                }
-                return yPriority.Priority - xPriority.Priority;
+                return yPriority - xPriority;
             }
         }
     }
