@@ -9,18 +9,11 @@ namespace PrometheusBot.Extensions
 {
     public static class Exts
     {
-        public static bool IsSubclassOfRawGeneric(this Type type, Type generic)
+        public static T RandomElement<T>(this IList<T> list)
         {
-            while (type != null && type != typeof(object))
-            {
-                var cur = type.IsGenericType ? type.GetGenericTypeDefinition() : type;
-                if (generic == cur)
-                {
-                    return true;
-                }
-                type = type.BaseType;
-            }
-            return false;
+            Random random = new();
+            int index = random.Next(0, list.Count);
+            return list[index];
         }
         public static async Task<IMessage> GetPreviousMessageAsync(this IMessage message)
         {
