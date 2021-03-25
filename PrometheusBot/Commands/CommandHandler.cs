@@ -8,26 +8,30 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 
-namespace PrometheusBot.CommandHandlers
+namespace PrometheusBot.Commands
 {
     class CommandHandler
     {
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commands;
+        private readonly NonStandardCommandService _nonStandardCommands;
 
-        public CommandHandler(DiscordSocketClient client, CommandService commands)
+        public CommandHandler(DiscordSocketClient client, CommandService commands, NonStandardCommandService nonStandardCommands)
         {
             _client = client;
             _commands = commands;
+            _nonStandardCommands = nonStandardCommands;
         }
         public async Task InstallCommandsAsync()
         {
             // Hook the MessageReceived event into our command handler
             _client.MessageReceived += HandleCommandAsync;
             _commands.CommandExecuted += OnCommandExecutedAsync;
+            _nonStandardCommands.CommandExecuted += OnCommandExecutedAsync;
 
-            await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(),
-                                            services: null);
+            Assembly assembly = Assembly.GetEntryAssembly();
+            await _commands.AddModulesAsync(assembly, null);
+            await _nonStandardCommands.AddModulesAsync(assembly);
         }
 
         private async Task HandleCommandAsync(SocketMessage messageParam)
@@ -38,16 +42,20 @@ namespace PrometheusBot.CommandHandlers
             // Create a number to track where the prefix ends and the command begins
             int argPos = 0;
 
+            // Create a WebSocket-based command context based on the message
+            SocketCommandContext context = new(_client, message);
+
             // Determine if the message is a command based on the prefix and make sure no bots trigger commands
             if (!(message.HasStringPrefix("n.", ref argPos) ||
                 message.HasStringPrefix("navi ", ref argPos) ||
                 message.HasStringPrefix("navi, ", ref argPos) ||
                 message.HasMentionPrefix(_client.CurrentUser, ref argPos)) ||
                 message.Author.IsBot)
+            {
+                await _nonStandardCommands.ExecuteAsync(context);
                 return;
+            }
 
-            // Create a WebSocket-based command context based on the message
-            SocketCommandContext context = new(_client, message);
 
             // Execute the command with the command context we just
             // created, along with the service provider for precondition checks.

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using PrometheusBot.CommandHandlers;
+using PrometheusBot.Commands;
 using PrometheusBot.Model;
 
 namespace PrometheusBot
@@ -33,8 +33,9 @@ namespace PrometheusBot
                 IgnoreExtraArgs = false
             };
             CommandService commands = new(commandsConfig);
+            NonStandardCommandService nonStandardCommands = new(RunMode.Async);
 
-            CommandHandler commandHandler = new(client, commands);
+            CommandHandler commandHandler = new(client, commands, nonStandardCommands);
             await commandHandler.InstallCommandsAsync();
 
             try
