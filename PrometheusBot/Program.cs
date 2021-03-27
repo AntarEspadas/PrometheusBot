@@ -15,6 +15,9 @@ namespace PrometheusBot
         {
             LocalSettings settings = LoadSettings();
 
+            string settingsPath = System.IO.Path.Combine(Directory, "settings.json");
+            PrometheusModel.Instance.Initialize(settingsPath, settings.ConnectionString);
+
             DiscordSocketConfig config = new()
             {
                 MessageCacheSize = 100

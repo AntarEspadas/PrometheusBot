@@ -10,10 +10,7 @@ namespace PrometheusBot.Model
         public static string Path { get; } = System.IO.Path.Combine(Program.Directory, "LocalSettings.json");
 
         public string DiscordToken { get; set; }
-        public string MysqlUsername { get; set; } = "PrometheusBot";
-        public string MysqlPassword { get; set; } = "PrometheusBot";
-        public string MysqlAddress { get; set; } = "localhost";
-        public int MysqlPort { get; set; } = 3306;
+        public string ConnectionString { get; set; } = "Server=localhost;Port=3306;database=PrometheusDB;user id=PrometheusBot;password=PrometheusBot";
 
         private LocalSettings()
         {

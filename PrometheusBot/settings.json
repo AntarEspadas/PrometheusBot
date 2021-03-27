@@ -1,0 +1,107 @@
+{
+    "prefix:synthetic": {
+        "Type": "System.String",
+        "DefaultValue": "n.",
+        "GuildPermissions": [
+            "Administrator"
+        ],
+        "ChannelPermissions": [
+
+        ],
+        "PermissionRole": true,
+        "ValidationRegex": ".+",
+        "RawErrorMessage": "This setting should be at least one character",
+        "Scope": 2,
+        "Visible": true
+    },
+    "prefix:natural": {
+        "Type": "System.String",
+        "DefaultValue": "navi",
+        "GuildPermissions": [
+            "Administrator"
+        ],
+        "ChannelPermissions": [
+
+        ],
+        "PermissionRole": true,
+        "ValidationRegex": ".+",
+        "RawErrorMessage": "This setting should be at least one character",
+        "Scope": 2,
+        "Visible": true
+    },
+    "prefix:use-user-defined": {
+        "Type": "System.Boolean",
+        "DefaultValue": "false",
+        "GuildPermissions": [
+            "Administrator"
+        ],
+        "ChannelPermissions": [
+
+        ],
+        "PermissionRole": true,
+        "ValidationRegex": "(true)|(false)",
+        "RawErrorMessage": "`%s` is not a valid value. Value must be either `true` or `false`",
+        "Scope": "Guild",
+        "Visible": true
+    },
+    "admin:bot-role-name": {
+        "Type": "System.String",
+        "DefaultValue": "Sojiro",
+        "GuildPermissions": [
+            "Administrator"
+        ],
+        "ChannelPermissions": [
+
+        ],
+        "PermissionRole": false,
+        "ValidationRegex": ".+",
+        "RawErrorMessage": "This setting should be at least one character",
+        "Scope": "Guild",
+        "Visible": true
+    },
+    "undelete:opt-out": {
+        "Type": "System.Boolean",
+        "DefaultValue": "false",
+        "GuildPermissions": [
+            "Administrator"
+        ],
+        "ChannelPermissions": [
+
+        ],
+        "PermissionRole": true,
+        "ValidationRegex": "(true)|(false)",
+        "RawErrorMessage": "`%s` is not a valid value. Value must be either `true` or `false`",
+        "Scope": "Both",
+        "Visible": true
+    },
+    "unedit:opt-out": {
+        "Type": "System.Boolean",
+        "DefaultValue": "false",
+        "GuildPermissions": [
+            "Administrator"
+        ],
+        "ChannelPermissions": [
+
+        ],
+        "PermissionRole": true,
+        "ValidationRegex": "(true)|(false)",
+        "RawErrorMessage": "`%s` is not a valid value. Value must be either `true` or `false`",
+        "Scope": "Both",
+        "Visible": true
+    },
+    "_secret-santa:last-sent": {
+        "Type": "System.DateTime",
+        "DefaultValue": "",
+        "GuildPermissions": [
+
+        ],
+        "ChannelPermissions": [
+
+        ],
+        "PermissionRole": false,
+        "ValidationRegex": ".*",
+        "RawErrorMessage": "",
+        "Scope": "Guild",
+        "Visible": false
+    }
+}

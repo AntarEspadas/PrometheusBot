@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using PrometheusBot.Model;
 
 namespace PrometheusBot.Commands
 {
@@ -45,10 +46,18 @@ namespace PrometheusBot.Commands
             // Create a WebSocket-based command context based on the message
             SocketCommandContext context = new(_client, message);
 
+            //Get the prefixes
+            ulong UserId = context.User.Id;
+            ulong GuildId = context.Guild.Id;
+            ulong ChannelId = context.Channel.Id;
+            string[] prefixes = PrometheusModel.Instance.GetPrefixes(UserId, GuildId, ChannelId);
+            string naturalPrefix = prefixes[0];
+            string syntheticPrefix = prefixes[1];
+
             // Determine if the message is a command based on the prefix and make sure no bots trigger commands
-            if (!(message.HasStringPrefix("n.", ref argPos) ||
-                message.HasStringPrefix("navi ", ref argPos) ||
-                message.HasStringPrefix("navi, ", ref argPos) ||
+            if (!(message.HasStringPrefix(syntheticPrefix, ref argPos) ||
+                message.HasStringPrefix(naturalPrefix + " ", ref argPos) ||
+                message.HasStringPrefix(naturalPrefix + ", ", ref argPos) ||
                 message.HasMentionPrefix(_client.CurrentUser, ref argPos)) ||
                 message.Author.IsBot)
             {
