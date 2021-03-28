@@ -54,8 +54,7 @@ namespace PrometheusBot.Commands
         }
         private IResult ExecuteAsyncPrivate(ICommandContext context)
         {
-            var method = _methods
-                .FirstOrDefault(method => method.GetCustomAttribute<NonStandardCommandAttribute>().Validate(context));
+            var method = GetFirstValid(context);
 
             if (method is null) return null;
 
@@ -82,7 +81,20 @@ namespace PrometheusBot.Commands
                 return new NonStandardCommandResult(CommandError.Exception, ex.Message);
             }
         }
-
+        private MethodInfo GetFirstValid(ICommandContext context)
+        {
+            foreach (MethodInfo method in _methods)
+            {
+                bool valid = false;
+                try
+                {
+                    valid = method.GetCustomAttribute<NonStandardCommandAttribute>().Validate(context);
+                }
+                catch { }
+                if (valid) return method;
+            }
+            return null;
+        }
         public void OnCommandExecuted(ICommandContext context, Task<IResult> task)
         {
             IResult result = task.Result;
