@@ -13,7 +13,7 @@ namespace PrometheusBot.Model
         public static PrometheusModel Instance { get; } = new();
 
         private Dictionary<string, SettingModel> _settingsInfo;
-        private DataAccess _data;
+        internal DataAccess Data { get; private set; }
 
         private PrometheusModel()
         {
@@ -25,7 +25,7 @@ namespace PrometheusBot.Model
             string json = File.ReadAllText(settingsPath);
             _settingsInfo = JsonConvert.DeserializeObject<Dictionary<string, SettingModel>>(json);
 
-            _data = new(connectionString);
+            Data = new(connectionString);
         }
         public SettingModel GetSettingInfo(string setting)
         {
@@ -44,7 +44,7 @@ namespace PrometheusBot.Model
         }
         public bool GetSetting(SettingLookupInfo lookupInfo, out object value, bool lookForDefault = false)
         {
-            using var session = _data.Session;
+            using var session = Data.Session;
             return GetSetting(lookupInfo, out value, session, lookForDefault);
         }
         public bool GetSetting(SettingLookupInfo lookupInfo, out object value, DataAccessSession dataSession, bool lookForDefault = false)
@@ -82,13 +82,13 @@ namespace PrometheusBot.Model
             if (value is null)
             {
                 sql = Queries.removeSetting;
-                _data.SaveData(sql, lookupInfo);
+                Data.SaveData(sql, lookupInfo);
                 return;
             }
             sql = Queries.updateSetting;
             string stringValue = settingModel.Convert(value);
             var parameters = new { lookupInfo.SettingName, lookupInfo.Ids, Value = stringValue};
-            _data.SaveData(sql, parameters);
+            Data.SaveData(sql, parameters);
         }
 
         public string[] GetPrefixes(ulong UserId, ulong GuildId, ulong ChannelId)

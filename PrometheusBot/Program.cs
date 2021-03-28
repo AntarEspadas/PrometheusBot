@@ -5,6 +5,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using PrometheusBot.Commands;
 using PrometheusBot.Model;
+using PrometheusBot.Modules.Utility.History;
 
 namespace PrometheusBot
 {
@@ -23,7 +24,10 @@ namespace PrometheusBot
                 MessageCacheSize = 100
             };
             DiscordSocketClient client = new(config);
+            
             client.Log += Log;
+            client.MessageUpdated += MessageHistory.Instance.AddAsync;
+            client.MessageDeleted += MessageHistory.Instance.AddDeletedAsync;
 
             await client.LoginAsync(TokenType.Bot, settings.DiscordToken);
             await client.StartAsync();

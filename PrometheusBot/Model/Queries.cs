@@ -18,8 +18,39 @@ namespace PrometheusBot.Model
             on duplicate key update value=@Value";
 
         public const string removeSetting =
-            @"delete from settigns
+            @"delete from settings
             where setting_name = @SettingName
-            and Ids = @Ids";
+            and ids = @Ids";
+
+        public const string updateReaction =
+@"insert into reactions (guild_id, id, {0}) Values(@GuildId, @Id, {1})
+on duplicate key update {2};";
+
+        public const string deleteReaction =
+@"delete from reactions
+where guild_id = @GuildId
+and id = @Id;";
+
+        public const string selectAllReactions =
+@"select * from reactions
+where guild_id = @GuildId;";
+
+        public const string selectAnywhereMatchingReactions =
+@"select text_trigger, text_response, match_index, weight from
+(
+select *, instr(@Message, text_trigger) as match_index from anywhere_reactions
+where 	guild_id = @GuildId
+) as matches
+where match_index;";
+
+        public const string selectStrictMatchingReactions =
+@"select text_trigger, text_response, 1 as match_index, weight from reactions
+where guild_id = @GuildId
+and text_trigger = @Message;";
+
+        public const string countReactions =
+@"select count(guild_id)
+from reactions
+where guild_id = @GuildId;";
     }
 }

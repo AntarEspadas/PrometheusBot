@@ -40,6 +40,8 @@ namespace PrometheusBot.Commands
             // Don't process the command if it was a system message
             if (messageParam is not SocketUserMessage message) return;
 
+            if (message.Author.IsBot) return;
+
             // Create a number to track where the prefix ends and the command begins
             int argPos = 0;
 
@@ -54,12 +56,11 @@ namespace PrometheusBot.Commands
             string naturalPrefix = prefixes[0];
             string syntheticPrefix = prefixes[1];
 
-            // Determine if the message is a command based on the prefix and make sure no bots trigger commands
+
             if (!(message.HasStringPrefix(syntheticPrefix, ref argPos) ||
                 message.HasStringPrefix(naturalPrefix + " ", ref argPos) ||
                 message.HasStringPrefix(naturalPrefix + ", ", ref argPos) ||
-                message.HasMentionPrefix(_client.CurrentUser, ref argPos)) ||
-                message.Author.IsBot)
+                message.HasMentionPrefix(_client.CurrentUser, ref argPos)))
             {
                 await _nonStandardCommands.ExecuteAsync(context);
                 return;
