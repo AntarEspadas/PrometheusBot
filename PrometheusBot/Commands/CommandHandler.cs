@@ -86,6 +86,8 @@ namespace PrometheusBot.Commands
                 return Task.CompletedTask;
             }
             LogCommandError(source, commandName, result);
+            if (result.Error == CommandError.UnknownCommand || result.Error == CommandError.Unsuccessful)
+                context.Channel.SendMessageAsync(result.ErrorReason);
             return Task.CompletedTask;
         }
         private void LogCommandExecution(string source, string commandName)
