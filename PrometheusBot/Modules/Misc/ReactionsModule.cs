@@ -58,10 +58,12 @@ namespace PrometheusBot.Modules.Misc
         }
 
         [Command("List reactions")]
-        public async Task<IResult> ListReactions()
+        public async Task<RuntimeResult> ListReactions()
         {
-            await ReplyAsync("This command has not yet been implemented");
-            return ExecuteResult.FromSuccess();
+            IList<ReactionModel> reactions = _reactions.GetAllReactions(Context.Guild.Id);
+            ReactionListForm form = new(Context, 90, reactions);
+            await form.ShowDialogAsync();
+            return CommandResult.FromSuccess();
         }
         [ReactCommand]
         [Priority(-50)]

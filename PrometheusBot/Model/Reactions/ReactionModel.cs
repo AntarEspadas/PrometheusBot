@@ -21,11 +21,11 @@ namespace PrometheusBot.Model.Reactions
             Id = id;
         }
 
-        public ReactionModel(ulong guild_id, string id, string text_trigger, string text_response, bool? anywhere, int? weight) : this(guild_id, id)
+        public ReactionModel(ulong guild_id, string id, string text_trigger, string text_response, sbyte anywhere, int weight) : this(guild_id, id)
         {
             Trigger = text_trigger;
             Response = text_response;
-            Anywhere = anywhere;
+            Anywhere = anywhere != 0;
             Weight = weight;
         }
     }
