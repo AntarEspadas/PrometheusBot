@@ -2,7 +2,7 @@
 -- MySQL Workbench Migration
 -- Migrated Schemata: PrometheusDB
 -- Source Schemata: PrometheusDB
--- Created: Fri Mar 26 18:41:19 2021
+-- Created: Mon Mar 29 00:33:31 2021
 -- Workbench Version: 8.0.22
 -- ----------------------------------------------------------------------------
 
@@ -24,4 +24,26 @@ CREATE TABLE IF NOT EXISTS `PrometheusDB`.`settings` (
   PRIMARY KEY (`setting_name`, `ids`),
   UNIQUE INDEX `id_UNIQUE` (`ids` ASC) VISIBLE)
 ENGINE = InnoDB;
+
+-- ----------------------------------------------------------------------------
+-- Table PrometheusDB.reactions
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `PrometheusDB`.`reactions` (
+  `guild_id` BIGINT UNSIGNED NOT NULL,
+  `id` VARCHAR(25) NOT NULL,
+  `text_trigger` VARCHAR(100) NULL,
+  `text_response` VARCHAR(1000) NULL,
+  `anywhere` TINYINT NOT NULL DEFAULT 0,
+  `weight` INT NOT NULL DEFAULT 1,
+  PRIMARY KEY (`guild_id`, `id`))
+ENGINE = InnoDB;
+
+-- ----------------------------------------------------------------------------
+-- View PrometheusDB.anywhere_reactions
+-- ----------------------------------------------------------------------------
+USE `PrometheusDB`;
+CREATE  OR REPLACE VIEW `anywhere_reactions` AS
+select guild_id, text_trigger, text_response, weight
+from reactions
+where anywhere;
 SET FOREIGN_KEY_CHECKS = 1;
