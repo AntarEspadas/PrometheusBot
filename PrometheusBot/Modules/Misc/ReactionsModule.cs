@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Discord.Commands;
 using PrometheusBot.Model.Reactions;
 using PrometheusBot.Extensions;
+using Discord;
 
 namespace PrometheusBot.Modules.Misc
 {
@@ -64,6 +65,43 @@ namespace PrometheusBot.Modules.Misc
             ReactionListForm form = new(Context, 90, reactions);
             await form.ShowDialogAsync();
             return CommandResult.FromSuccess();
+        }
+        [Command("View reaction")]
+        [Alias("Get reaction")]
+        public async Task<RuntimeResult> GetReaction(string id)
+        {
+            var reaction = _reactions.GetReaction(Context.Guild.Id, id);
+            if (reaction is null)
+                return CommandResult.FromError(CommandError.Unsuccessful, $"No reaction with id `{id}` could be found");
+            EmbedBuilder embedBuilder = new()
+            {
+                Title = reaction.Id,
+                Fields = GetFields(reaction)
+            };
+            await ReplyAsync(embed: embedBuilder.Build());
+            return CommandResult.FromSuccess();
+        }
+        private List<EmbedFieldBuilder> GetFields(ReactionModel reaction)
+        {
+            List<EmbedFieldBuilder> fields = new()
+            {
+                GetField("Trigger", reaction.Trigger),
+                GetField("Response", reaction.Response),
+                GetField("Anywhere", reaction.Anywhere),
+                GetField("Weight", reaction.Weight)
+            };
+            return fields;
+        }
+        private EmbedFieldBuilder GetField(string field, object valule)
+        {
+            string strValue = Newtonsoft.Json.JsonConvert.SerializeObject(valule);
+            strValue += "\n\u200B";
+            EmbedFieldBuilder fieldBuilder = new()
+            {
+                Name = field,
+                Value = strValue
+            };
+            return fieldBuilder;
         }
         [ReactCommand]
         [Priority(-50)]

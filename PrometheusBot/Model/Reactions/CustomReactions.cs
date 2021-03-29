@@ -86,5 +86,10 @@ namespace PrometheusBot.Model.Reactions
             string sql = Queries.countReactions;
             return _data.LoadData<int, object>(sql, new { GuildId = guildId }).FirstOrDefault();
         }
+        public ReactionModel GetReaction(ulong guildId, string id)
+        {
+            string sql = Queries.getReaction;
+            return _data.LoadData<ReactionModel, object>(sql, new { GuildId = guildId, Id = id }).FirstOrDefault();
+        }
     }
 }

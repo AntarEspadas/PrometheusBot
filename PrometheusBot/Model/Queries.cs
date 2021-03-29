@@ -52,5 +52,10 @@ and text_trigger = @Message;";
 @"select count(guild_id)
 from reactions
 where guild_id = @GuildId;";
+
+        public const string getReaction =
+@"select * from reactions
+where guild_id = @GuildId
+and id = @Id;";
     }
 }
