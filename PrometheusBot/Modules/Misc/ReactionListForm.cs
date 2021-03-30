@@ -43,9 +43,11 @@ namespace PrometheusBot.Modules.Misc
 
                 AddButtonAsync(_previousButton).Wait();
                 AddButtonAsync(_nextButton).Wait();
+            }
 
+            if (_pages.Count > 0)
+            {
                 Embed = GetPageEmbed();
-
                 return;
             }
 
