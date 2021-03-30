@@ -17,10 +17,23 @@ namespace PrometheusBot.Model.Reactions
         public void AddOrUpdate(ReactionModel reaction)
         {
             string sql = Queries.updateReaction;
-            sql = FormatQuery(sql, reaction);
+            sql = FormatAddOrUpdateQuery(sql, reaction);
             _data.SaveData(sql, reaction);
         }
-        private string FormatQuery(string sql, ReactionModel reaction)
+        private string FormatAddOrUpdateQuery(string sql, ReactionModel reaction)
+        {
+            var rowsAndParams = GetColumnsAndParams(reaction);
+            var columns = rowsAndParams[0];
+            var parameters = rowsAndParams[1]; 
+
+            string columnsString = string.Join(", ", columns);
+            string parametersString = string.Join(", ", parameters);
+            IList<string> pairs = GetPairs(columns, parameters);
+            string updateString = string.Join(", ", pairs);
+
+            return string.Format(sql, columnsString, parametersString, updateString);
+        }
+        private List<string>[] GetColumnsAndParams(ReactionModel reaction)
         {
             List<string> columns = new();
             List<string> parameters = new();
@@ -34,12 +47,9 @@ namespace PrometheusBot.Model.Reactions
             AddIfNotNull(columns, reaction.Weight, "weight");
             AddIfNotNull(parameters, reaction.Weight, "@Weight");
 
-            string columnsString = string.Join(", ", columns);
-            string parametersString = string.Join(", ", parameters);
-            IList<string> pairs = GetPairs(columns, parameters);
-            string updateString = string.Join(", ", pairs);
+            var result = new[] { columns, parameters };
+            return result;
 
-            return string.Format(sql, columnsString, parametersString, updateString);
         }
         private IList<string> GetPairs(IList<string> columns, IList<string> parameters)
         {
@@ -66,10 +76,31 @@ namespace PrometheusBot.Model.Reactions
             List<ulong> result = _data.LoadData<ulong, object>(sql, new { GuildId = guildId, Id = id });
             return result.Count > 0;
         }
-        public IList<ReactionModel> GetAllReactions(ulong guildId)
+        public IList<ReactionModel> GetAllReactions(ReactionModel reaction)
         {
-            string sql = Queries.selectAllReactions;
-            return _data.LoadData<ReactionModel, object>(sql, new { GuildId = guildId });
+            string sql = GetAllReactionsQuery(reaction);
+            return _data.LoadData<ReactionModel, object>(sql, reaction);
+        }
+        private string GetAllReactionsQuery(ReactionModel reaction)
+        {
+            string additionalConditions = "";
+            var ColumnsAndParams = GetColumnsAndParams(reaction);
+            var columns = ColumnsAndParams[0];
+            var parameters = ColumnsAndParams[1];
+
+            for (int i = 0; i < columns.Count; i++)
+            {
+                string value;
+                if (columns[i] == "text_trigger" || columns[i] == "text_response")
+                    value = $"instr({columns[i]}, {parameters[i]})";
+                else
+                    value = $"{columns[i]} = {parameters[i]}";
+                additionalConditions += $"and {value} ";
+            }
+
+            string sql = Queries.getAllReactions;
+            sql = string.Format(sql, additionalConditions);
+            return sql;
         }
         public IList<ReactionMatch> GetMatchingReactions(ulong guildId, string message)
         {

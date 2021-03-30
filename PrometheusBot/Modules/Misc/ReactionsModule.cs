@@ -61,7 +61,19 @@ namespace PrometheusBot.Modules.Misc
         [Command("List reactions")]
         public async Task<RuntimeResult> ListReactions()
         {
-            IList<ReactionModel> reactions = _reactions.GetAllReactions(Context.Guild.Id);
+            return await ListReactions(new());
+        }
+        [Command("List reactions")]
+        public async Task<RuntimeResult> ListReactions(Arguments args)
+        {
+            ReactionModel reaction = new(Context.Guild.Id, null)
+            {
+                Anywhere = args.Anywhere,
+                Response = args.Response,
+                Trigger = args.Trigger,
+                Weight = args.Weight
+            };
+            IList<ReactionModel> reactions = _reactions.GetAllReactions(reaction);
             ReactionListForm form = new(Context, 90, reactions);
             await form.ShowDialogAsync();
             return CommandResult.FromSuccess();

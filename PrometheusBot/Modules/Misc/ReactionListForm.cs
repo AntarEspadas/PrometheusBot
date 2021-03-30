@@ -31,18 +31,34 @@ namespace PrometheusBot.Modules.Misc
                 currentPage.Add(reactions[i]);
             }
 
-            _previousButton = new(new Emoji("\u2B05"));
-            _nextButton = new(new Emoji("\u27A1"));
-
-            _previousButton.Clicked += PreviousButton_Clicked;
-            _nextButton.Clicked += NextButton_Clicked;
-
-            AddButtonAsync(_previousButton).Wait();
-            AddButtonAsync(_nextButton).Wait();
-
             _embedBuilder = GetEmbedBuilder();
 
-            Embed = GetPageEmbed();
+            if (_pages.Count > 1)
+            {
+                _previousButton = new(new Emoji("\u2B05"));
+                _nextButton = new(new Emoji("\u27A1"));
+
+                _previousButton.Clicked += PreviousButton_Clicked;
+                _nextButton.Clicked += NextButton_Clicked;
+
+                AddButtonAsync(_previousButton).Wait();
+                AddButtonAsync(_nextButton).Wait();
+
+                Embed = GetPageEmbed();
+
+                return;
+            }
+
+            EmbedFieldBuilder emptyField = new()
+            {
+                Name = "No reactions found",
+                Value = "\u200B"
+            };
+
+            _embedBuilder.AddField(emptyField);
+
+            var embed = _embedBuilder.Build();
+            Embed = embed;
         }
         private EmbedBuilder GetEmbedBuilder()
         {
@@ -111,7 +127,7 @@ namespace PrometheusBot.Modules.Misc
             value = Newtonsoft.Json.JsonConvert.SerializeObject(value);
             const int max = 20;
             if (value.Length > max)
-                value = value[..max] + "\"...";
+                value = value[..max] + "...\"";
             return value;
         }
     }

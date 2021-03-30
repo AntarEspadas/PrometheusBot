@@ -31,9 +31,10 @@ on duplicate key update {2};";
 where guild_id = @GuildId
 and id = @Id;";
 
-        public const string selectAllReactions =
+        public const string getAllReactions =
 @"select * from reactions
-where guild_id = @GuildId;";
+where guild_id = @GuildId
+{0};";
 
         public const string selectAnywhereMatchingReactions =
 @"select text_trigger, text_response, match_index, weight from
