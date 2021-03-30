@@ -52,6 +52,7 @@ namespace PrometheusBot.Modules.Fun
     {
         public override bool Validate(ICommandContext context)
         {
+            if (string.IsNullOrWhiteSpace(context.Message.Content)) return false;
             return new Random().Next(0, 500) == 69;
         }
     }
