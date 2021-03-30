@@ -11,13 +11,15 @@ namespace PrometheusBot.Modules.Fun
 {
     public class AModule : ModuleBase<SocketCommandContext>
     {
-        private static readonly string _aGif = Path.Combine(Program.Directory, "assets", "a", "a.gif");
+        private static readonly string _aResponse = Path.Combine(Program.Directory, "assets", "a", "aResponse.txt");
 
         [ACommand]
         public async Task A()
         {
-            if (!File.Exists(_aGif)) return;
-            await Context.Channel.SendFileAsync(_aGif);
+            string response = null;
+            try { response = File.ReadAllText(_aResponse); } catch { }
+            if (string.IsNullOrWhiteSpace(response)) return;
+            await ReplyAsync(response);
         }
     }
 
