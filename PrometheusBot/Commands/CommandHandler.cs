@@ -78,7 +78,7 @@ namespace PrometheusBot.Commands
         private Task OnCommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
             //If the command was succesful, simply log that it was run. If not, log the error and the reason
-            string source = "CommaneExecution";
+            string source = "CommandExecution";
             string commandName = command.IsSpecified ? command.Value.Name : "A command";
             if (string.IsNullOrEmpty(result?.ErrorReason))
             {
