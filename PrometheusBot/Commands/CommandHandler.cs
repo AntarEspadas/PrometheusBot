@@ -50,7 +50,7 @@ namespace PrometheusBot.Commands
 
             //Get the prefixes
             ulong UserId = context.User.Id;
-            ulong GuildId = context.Guild.Id;
+            ulong? GuildId = context.Guild?.Id;
             ulong ChannelId = context.Channel.Id;
             string[] prefixes = PrometheusModel.Instance.GetPrefixes(UserId, GuildId, ChannelId);
             string naturalPrefix = prefixes[0];
@@ -86,7 +86,7 @@ namespace PrometheusBot.Commands
                 return Task.CompletedTask;
             }
             LogCommandError(source, commandName, result);
-            if (result.Error == CommandError.UnknownCommand || result.Error == CommandError.Unsuccessful)
+            if (result.Error == CommandError.UnknownCommand || result.Error == CommandError.Unsuccessful || result.Error == CommandError.UnmetPrecondition)
                 context.Channel.SendMessageAsync(result.ErrorReason);
             return Task.CompletedTask;
         }

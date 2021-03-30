@@ -91,10 +91,10 @@ namespace PrometheusBot.Model
             Data.SaveData(sql, parameters);
         }
 
-        public string[] GetPrefixes(ulong UserId, ulong GuildId, ulong ChannelId)
+        public string[] GetPrefixes(ulong UserId, ulong? GuildId, ulong ChannelId)
         {
             string[] result = new string[2];
-            SettingLookupInfo info = new("prefix:use-user-defined") { UId = UserId, GId = GuildId, CId = ChannelId };
+            SettingLookupInfo info = new("prefix:use-user-defined") { GId = GuildId, CId = ChannelId };
             GetSetting(info, out bool useUserDefined, true);
             info = new("prefix:natural") { GId = GuildId };
             if (useUserDefined)
