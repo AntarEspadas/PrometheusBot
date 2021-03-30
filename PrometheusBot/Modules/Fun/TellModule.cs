@@ -18,7 +18,7 @@ namespace PrometheusBot.Modules.Fun
             if (regex.IsMatch(sentence))
             {
                 var application = await Context.Client.GetApplicationInfoAsync().ConfigureAwait(false);
-                if (Context.User.Id == application.Owner.Id)
+                if (user.Id == application.Owner.Id)
                 {
                     await ReplyAsync($"I love you {user.Mention}");
                 }
