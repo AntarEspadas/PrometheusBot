@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using PrometheusBot.Extensions;
 using PrometheusBot.Model;
 using PrometheusBot.Model.Settings;
 
@@ -160,7 +161,7 @@ namespace PrometheusBot.Modules.Config
                     return true;
                 SettingLookupInfo info = new("admin:bot-role-name") { GId = Context.Guild.Id };
                 model.GetSetting(info, out string roleName, true);
-                if (settingModel.PermissionRole && GetUserRoleNames(user).Contains(roleName))
+                if (settingModel.PermissionRole && user.HasRoleName(roleName))
                     return true;
                 foreach (var permission in settingModel.GuildPermissions)
                     if (user.GuildPermissions.Has(permission))
@@ -201,15 +202,6 @@ namespace PrometheusBot.Modules.Config
                 await ReplyAsync(embed: eb.Build());
 
                 return false;
-            }
-            private List<string> GetUserRoleNames(IGuildUser user)
-            {
-                var result = new List<string>(user.RoleIds.Count);
-                foreach (var roleId in user.RoleIds)
-                {
-                    result.Add(Context.Guild.GetRole(roleId).Name);
-                }
-                return result;
             }
         }
     }

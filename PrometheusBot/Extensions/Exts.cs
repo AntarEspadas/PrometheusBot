@@ -72,5 +72,19 @@ namespace PrometheusBot.Extensions
             return default;
 
         }
+
+        public static bool HasRoleName(this IGuildUser user, string roleName)
+        {
+            var guild = user.Guild;
+            var matchingRoles = guild
+                .Roles
+                .Where(role => role.Name == roleName)
+                .Select(role => role.Id)
+                .ToHashSet();
+
+            matchingRoles.IntersectWith(user.RoleIds);
+
+            return matchingRoles.Any();
+        }
     }
 }

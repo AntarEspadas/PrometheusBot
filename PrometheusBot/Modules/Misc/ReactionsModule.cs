@@ -7,6 +7,7 @@ using Discord.Commands;
 using PrometheusBot.Model.Reactions;
 using PrometheusBot.Extensions;
 using Discord;
+using PrometheusBot.Commands.Preconditions;
 
 namespace PrometheusBot.Modules.Misc
 {
@@ -15,6 +16,7 @@ namespace PrometheusBot.Modules.Misc
         internal static readonly Dictionary<ICommandContext, Tuple<IList<ReactionMatch>, bool>> pendingMatches = new();
 
         private static readonly CustomReactions _reactions = CustomReactions.Instance;
+
         [Command("Reaction")]
         public async Task<RuntimeResult> AddOrUpdateReaction(string reactionId, Arguments args)
         {
