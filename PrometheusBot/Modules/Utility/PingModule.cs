@@ -25,7 +25,7 @@ namespace PrometheusBot.Modules.Utility
             int msgChannelLatency = endTime.Subtract(startTime).Milliseconds;
             int apiLatency = Context.Client.Latency;
 
-            string msg = $"**Message channel Latency**: {msgChannelLatency}ms.\n**Discord API latency**: {apiLatency}ms";
+            string msg = $"**Message channel Latency**: {msgChannelLatency}ms.\n**Discord API latency**: {apiLatency}ms.";
             embedBuilder.Description = msg;
             await message.ModifyAsync(message => message.Embed = embedBuilder.Build());
         }
