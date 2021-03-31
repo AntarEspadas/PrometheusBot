@@ -16,7 +16,6 @@ namespace PrometheusBot.Commands.Preconditions
     {
         // See the attribute guidelines at 
         //  http://go.microsoft.com/fwlink/?LinkId=85236
-        readonly string positionalString;
 
         public PermissionOrRoleAttribute(GuildPermission permission) : base(permission)
         {
