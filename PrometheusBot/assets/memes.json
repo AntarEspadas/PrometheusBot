@@ -1,0 +1,72 @@
+[
+  {
+    "ImageFile": "wait-its-all-ohio.png",
+    "FontFiles": [
+      "arial.ttf"
+    ],
+    "Triggers": [
+      "always has been",
+      "ahb"
+    ],
+    "Labels": [
+      {
+        "Rectangle": "150, 50, 450, 165",
+        "FontName": "arial",
+        "FontSize": 8.0,
+        "MainColor": "255, 255, 255",
+        "OutlineColor": "0, 0, 0",
+        "LabelText": "$RepliedMessage",
+        "VerticalAlignment": "Bottom"
+      },
+      {
+        "Rectangle": "350, 225, 150, 75",
+        "FontName": "arial",
+        "FontSize": 7.0,
+        "MainColor": "255, 255, 255",
+        "OutlineColor": "0, 0, 0",
+        "LabelText": "$RepliedUser",
+        "VerticalAlignment": "Center"
+      },
+      {
+        "Rectangle": "625, 50, 250, 125",
+        "FontName": "arial",
+        "FontSize": 8.0,
+        "MainColor": "255, 255, 255",
+        "OutlineColor": "0, 0, 0",
+        "LabelText": "$User",
+        "VerticalAlignment": "Center"
+      },
+      {
+        "Rectangle": "400, 0, 475, 50",
+        "FontName": "arial",
+        "FontSize": 9.0,
+        "MainColor": "255, 255, 255",
+        "OutlineColor": "0, 0, 0",
+        "LabelText": "Always has been",
+        "VerticalAlignment": "Center"
+      }
+    ]
+  },
+  
+  {
+    "ImageFile": "hilarious-jokes.jpg",
+    "FontFiles": [
+      "oswald.ttf"
+    ],
+    "Triggers": [
+      "and other hilarious jokes you can tell yourself",
+      "hilarious jokes"
+    ],
+    "Labels": [
+      {
+        "Rectangle": "400, 190, 670, 320",
+        "FontName": "oswald",
+        "FontSize": 12.0,
+        "MainColor": "5, 4, 1",
+        "OutlineColor": "0, 0, 0, 0",
+        "LabelText": "\"$RepliedMessage\"",
+        "VerticalAlignment": "Bottom"
+      }
+    ]
+  }
+]
