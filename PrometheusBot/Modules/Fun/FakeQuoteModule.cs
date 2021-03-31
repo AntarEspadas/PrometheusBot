@@ -50,10 +50,12 @@ namespace PrometheusBot.Modules.Fun
 
     class RandomFakeQuoteCommandAttribute : NonStandardCommandAttribute
     {
+        private static readonly Random _random = new();
         public override bool Validate(ICommandContext context)
         {
             if (string.IsNullOrWhiteSpace(context.Message.Content)) return false;
-            return new Random().Next(0, 500) == 69;
+            if (context.Message.Content.Length > 255) return false;
+            return _random.Next(0, 500) == 69;
         }
     }
 }
