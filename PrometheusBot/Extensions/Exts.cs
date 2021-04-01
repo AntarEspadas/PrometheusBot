@@ -9,10 +9,10 @@ namespace PrometheusBot.Extensions
 {
     public static class Exts
     {
+        private static readonly Random _random = new();
         public static T RandomElement<T>(this IList<T> list)
         {
-            Random random = new();
-            int index = random.Next(0, list.Count);
+            int index = _random.Next(0, list.Count);
             return list[index];
         }
         public static async Task<IMessage> GetPreviousMessageAsync(this IMessage message)
@@ -56,7 +56,7 @@ namespace PrometheusBot.Extensions
         {
             float totalWeight = sequence.Sum(weightSelector);
             // The weight we are after...
-            double itemWeightIndex = new Random().NextDouble() * totalWeight;
+            double itemWeightIndex = _random.NextDouble() * totalWeight;
             float currentWeightIndex = 0;
 
             foreach (var item in from weightedItem in sequence select new { Value = weightedItem, Weight = weightSelector(weightedItem) })

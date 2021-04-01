@@ -39,14 +39,14 @@ namespace PrometheusBot.Modules.Fun
             regex = new Regex("n(?=[aeiouáéíóú])");
             text = regex.Replace(text, "ny");
             regex = new Regex("N(?=[aeiouáéíóú])");
-            text = regex.Replace(text, "ny");
+            text = regex.Replace(text, "Ny");
             regex = new Regex("N(?=[AEIOUÁÉÍÓÚ])");
-            text = regex.Replace(text, "ny");
+            text = regex.Replace(text, "NY");
             regex = new Regex("(?<=[pt])o");
             text = regex.Replace(text, "wo");
             regex = new Regex("!+");
             var random = new Random();
-            text = regex.Replace(text, $" {faces[random.Next(0, faces.Length)]} ");
+            text = regex.Replace(text, $" {faces.RandomElement()} ");
             return text;
         }
     }
