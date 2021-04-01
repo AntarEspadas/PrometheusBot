@@ -5,6 +5,8 @@ using Discord.Commands;
 using SixLabors.Fonts;
 using PrometheusBot.Extensions;
 using SixLabors.ImageSharp;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace PrometheusBot.Modules.Fun.LabelMemes
 {
@@ -16,17 +18,25 @@ namespace PrometheusBot.Modules.Fun.LabelMemes
         public List<string> FontFiles { get; set; }
         public List<string> Triggers { get; set; }
         public List<Label> Labels { get; set; }
+        public List<ImageLabel> ImageLabels { get; set; }
 
-        public void GetImage(ICommandContext context, Stream outputStream)
+        public async Task GetImageAsync(ICommandContext context, Stream outputStream)
         {
             using var image = Image.Load(Path.Combine(_imagesPath, ImageFile));
             var fonts = GetFonts();
-            var repliedMessage = context.Message.GetReplyingMessageAsync().Result;
+            var repliedMessage = await context.Message.GetReplyingMessageAsync();
 
-            foreach (var label in Labels)
-                label.Draw(image, fonts, context, repliedMessage);
+            var imgTasks = ImageLabels?
+                .Select(img => img?.DrawAsync(image, context, repliedMessage))
+                .Where(task => task is not null);
 
-            image.SaveAsPng(outputStream);
+            if (imgTasks is not null)
+                await Task.WhenAll(imgTasks);
+
+            Labels?.ForEach(label =>
+               label?.Draw(image, fonts, context, repliedMessage));
+
+            await image.SaveAsPngAsync(outputStream);
         }
         private FontCollection GetFonts()
         {

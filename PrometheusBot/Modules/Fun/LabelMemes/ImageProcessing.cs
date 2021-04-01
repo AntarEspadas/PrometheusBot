@@ -81,6 +81,7 @@ namespace PrometheusBot.Modules.Fun.LabelMemes
             switch (verticalAlignment)
             {
                 case VerticalAlignment.Top:
+                    position.Y = rectangle.Y;
                     break;
                 case VerticalAlignment.Center:
                     position.Y = rectangle.Y + rectangle.Height / 2;

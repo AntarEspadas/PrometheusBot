@@ -44,7 +44,7 @@ namespace PrometheusBot.Modules.Fun.LabelMemes
             var meme = memes[messageContent];
 
             using MemoryStream image = new();
-            meme.GetImage(Context, image);
+            await meme.GetImageAsync(Context, image);
             image.Position = 0;
 
             await Context.Channel.SendFileAsync(image, meme.ImageFile);
