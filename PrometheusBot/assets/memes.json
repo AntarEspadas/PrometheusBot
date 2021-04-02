@@ -80,5 +80,39 @@
         "VerticalAlignment": "Bottom"
       }
     ]
+  },
+  
+  {
+    "ImageFile": "first-time.png",
+    "FontFiles": [
+      "arial.ttf"
+    ],
+    "Triggers": [
+      "first time?",
+      "first time"
+    ],
+    "Labels": [
+      {
+        "Rectangle": "75, 75, 300, 150",
+        "FontName": "arial",
+        "FontSize": 6.5,
+        "MainColor": "242, 244, 179",
+        "OutlineColor": "0, 0, 0",
+        "LabelText": "$RepliedMessage",
+        "VerticalAlignment": "Bottom"
+      }
+    ],
+    "ImageLabels": [
+      {
+        "ImageSource": "$RepliedUser",
+        "Opacity": 0.75,
+        "Rectangle": "150, 20, 110, 110"
+      },
+      {
+        "ImageSource": "$User",
+        "Opacity": 0.75,
+        "Rectangle": "140, 260, 110, 110"
+      }
+    ]
   }
 ]
