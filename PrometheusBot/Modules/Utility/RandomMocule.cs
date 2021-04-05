@@ -1,0 +1,46 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Discord.Commands;
+using PrometheusBot.Extensions;
+
+namespace PrometheusBot.Modules.Utility
+{
+    public class RandomMocule : ModuleBase<SocketCommandContext>
+    {
+        private static readonly Random _random = new();
+        [Command("Choose")]
+        public async Task<RuntimeResult> Choose(params string[] options)
+        {
+            if (options.Length < 2)
+                return CommandResult.FromError(CommandError.Unsuccessful, "Not much of a choice without two or more options");
+            string chosen = options.RandomElement();
+            await ReplyAsync("> " + chosen);
+            return CommandResult.FromSuccess();
+        }
+        [Command("Coin flip")]
+        [Alias("Flip a coin")]
+        public async Task CoinFlip()
+        {
+            await Choose("Heads", "Tails");
+        }
+        [Command("Random")]
+        public async Task<RuntimeResult> Random(int minValue, int maxValue)
+        {
+            if (maxValue < minValue)
+                return CommandResult.FromError(CommandError.Unsuccessful, "The maximum value must be greater than the minimum value");
+            int randInt = _random.Next(minValue, maxValue);
+            await ReplyAsync("> " + randInt);
+            return CommandResult.FromSuccess();
+        }
+        [Command("Random decimal")]
+        [Alias("Randomd")]
+        public async Task RandomDouble()
+        {
+            double randDouble = _random.NextDouble();
+            await ReplyAsync("> " + randDouble);
+        }
+    }
+}
