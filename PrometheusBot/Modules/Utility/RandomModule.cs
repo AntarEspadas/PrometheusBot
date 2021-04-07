@@ -8,7 +8,7 @@ using PrometheusBot.Extensions;
 
 namespace PrometheusBot.Modules.Utility
 {
-    public class RandomMocule : ModuleBase<SocketCommandContext>
+    public class RandomModule : ModuleBase<SocketCommandContext>
     {
         private static readonly Random _random = new();
         [Command("Choose")]
