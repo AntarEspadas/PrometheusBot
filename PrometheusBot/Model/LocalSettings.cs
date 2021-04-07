@@ -11,6 +11,8 @@ namespace PrometheusBot.Model
 
         public string DiscordToken { get; set; }
         public string ConnectionString { get; set; } = "Server=localhost;Port=3306;database=PrometheusDB;user id=PrometheusBot;password=PrometheusBot";
+        public string CatApiKey { get; set; }
+        public string DogApiKey { get; set; }
 
         private LocalSettings()
         {
