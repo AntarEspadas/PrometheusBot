@@ -49,7 +49,7 @@ namespace PrometheusBot.Modules.Fun.RandomAnimals
             string imageUrl;
             try { imageUrl = await GetImageUrlAsync(api, apiKey); }
             catch { return CommandResult.FromError(CommandError.Unsuccessful, "There was an error retrieving data from the api"); }
-            await SendAnimalAsync($"{animal}!", $"Pwered by the{animalName}api.com - {animal}s as a service", imageUrl);
+            await SendAnimalAsync($"{animal}!", $"Powered by the{animalName}api.com - {animal}s as a service", imageUrl);
             return CommandResult.FromSuccess();
         }
 
