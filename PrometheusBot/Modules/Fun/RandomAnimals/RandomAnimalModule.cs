@@ -25,19 +25,35 @@ namespace PrometheusBot.Modules.Fun.RandomAnimals
         }
 
         [Command("Cat")]
-        public async Task<RuntimeResult> RandomCat()
+        public async Task<RuntimeResult> RandomCat(string fileType = null)
         {
-            return await GetAndSendAnimalAsync(Animal.Cat);
+            return await GetAndSendAnimalAsync(Animal.Cat, fileType);
         }
 
         [Command("Dog")]
-        public async Task<RuntimeResult> RandomDog()
+        public async Task<RuntimeResult> RandomDog(string fileType = null)
         {
-            return await GetAndSendAnimalAsync(Animal.Dog);
+            return await GetAndSendAnimalAsync(Animal.Dog, fileType);
         }
 
-        private async Task<CommandResult> GetAndSendAnimalAsync(Animal animal)
+        private async Task<CommandResult> GetAndSendAnimalAsync(Animal animal, string fileType)
         {
+            string mimeTypes;
+            switch (fileType)
+            {
+                case "gif":
+                    mimeTypes = "gif";
+                    break;
+                case "static":
+                    mimeTypes = "jpg,png";
+                    break;
+                case null:
+                    mimeTypes = "gif,jpg,png";
+                    break;
+                default:
+                    return CommandResult.FromError(CommandError.Unsuccessful, "Type most be either `gif` or `static`");
+            }
+
             string animalName = animal.ToString().ToLower();
             string api = $"https://api.the{animalName}api.com";
             string apiKey = animal switch
@@ -47,7 +63,7 @@ namespace PrometheusBot.Modules.Fun.RandomAnimals
                 _ => throw new NotSupportedException()
             };
             string imageUrl;
-            try { imageUrl = await GetImageUrlAsync(api, apiKey); }
+            try { imageUrl = await GetImageUrlAsync(api, mimeTypes, apiKey); }
             catch { return CommandResult.FromError(CommandError.Unsuccessful, "There was an error retrieving data from the api"); }
             await SendAnimalAsync($"{animal}!", $"Powered by the{animalName}api.com - {animal}s as a service", imageUrl);
             return CommandResult.FromSuccess();
@@ -69,12 +85,12 @@ namespace PrometheusBot.Modules.Fun.RandomAnimals
             await ReplyAsync(embed: embed);
         }
 
-        private async Task<string> GetImageUrlAsync(string api, string apiKey = null)
+        private async Task<string> GetImageUrlAsync(string api, string mimeTypes, string apiKey = null)
         {
             WebClient client = new();
             if (apiKey is not null)
                 client.Headers["x-api-key"] = apiKey;
-            string apiRequest = "/v1/images/search";
+            string apiRequest = $"/v1/images/search?mime_types={mimeTypes}";
             string stringResponse = await client.DownloadStringTaskAsync(api + apiRequest);
             var response = JsonConvert.DeserializeObject<ApiResponse[]>(stringResponse)[0];
             return response.Url;
