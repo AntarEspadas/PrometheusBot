@@ -51,7 +51,7 @@ namespace PrometheusBot.Modules.Fun.RandomAnimals
                     mimeTypes = "gif,jpg,png";
                     break;
                 default:
-                    return CommandResult.FromError(CommandError.Unsuccessful, "Type most be either `gif` or `static`");
+                    return CommandResult.FromError(CommandError.Unsuccessful, "Type must be either `gif` or `static`");
             }
 
             string animalName = animal.ToString().ToLower();
