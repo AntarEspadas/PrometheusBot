@@ -26,17 +26,17 @@ namespace PrometheusBot.Modules.Fun.Danbooru
             if (character is not null)
                 tags.Add(character);
 
-            string file = await RandomPost(tags);
+            Post post = await RandomPost(tags);
 
-            if (file is null)
+            if (post is null)
                 return CommandResult.FromError(CommandError.Unsuccessful, "Something went wrong. Maybe there are no available feet for that character?");
 
-            var embed = GetEmbed(file);
+            var embed = GetEmbed(post);
             await ReplyAsync(embed: embed.Build());
             return CommandResult.FromSuccess();
         }
 
-        private static async Task<string> RandomPost(IList<string> tags = null)
+        private static async Task<Post> RandomPost(IList<string> tags = null)
         {
             tags ??= Array.Empty<string>();
             string formattedTags = string.Join("%20", tags);
@@ -45,29 +45,29 @@ namespace PrometheusBot.Modules.Fun.Danbooru
             count ??= 200;
             int pages = (int)Math.Ceiling(count.Value / 200f);
             arguments += $"&limit=200&page={_random.Next(1, pages + 1)}";
-            List<ApiResponse> response = null;
+            List<Post> response = null;
             try
             {
                 string jsonResponse = await _httpClient.GetStringAsync(POSTS_API + arguments);
-                response = JsonConvert.DeserializeObject<List<ApiResponse>>(jsonResponse);
+                response = JsonConvert.DeserializeObject<List<Post>>(jsonResponse);
             }
-            catch (Exception ex) { }
+            catch { }
 
 
             var files = response
-                ?.Select(response => response.file_url)
                 ?.Where(file => file is not null)
                 .ToList();
 
             if (files is null || files.Count < 1) return null;
 
-            string file = files?.RandomElement();
+            var post = files?.RandomElement();
 
-            return file;
+            return post;
         }
 
-        private static EmbedBuilder GetEmbed(string file)
+        private static EmbedBuilder GetEmbed(Post post)
         {
+            string source = "https://danbooru.donmai.us/posts/" + post.id;
             EmbedFooterBuilder footerBuilder = new()
             {
                 Text = "From danbooru.donmai.us"
@@ -75,7 +75,8 @@ namespace PrometheusBot.Modules.Fun.Danbooru
             EmbedBuilder embedBuilder = new()
             {
                 Title = "**Feet!**",
-                ImageUrl = file,
+                Description = $"[Source]({source})",
+                ImageUrl = post.file_url,
                 Footer = footerBuilder
             };
 
