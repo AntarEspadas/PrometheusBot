@@ -19,6 +19,7 @@ namespace PrometheusBot.Modules.Fun.Danbooru
         private static readonly Random _random = new();
 
         [Command("Feet")]
+        [RequireNsfw]
         public async Task<RuntimeResult> Feet(string character = null)
         {
             List<string> tags = new() { "feet", "rating:safe" };
