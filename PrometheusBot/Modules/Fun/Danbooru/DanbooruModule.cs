@@ -57,9 +57,9 @@ namespace PrometheusBot.Modules.Fun.Danbooru
 
             var files = response
                 ?.Where(file => file is not null)
-                .ToList();
+                ?.ToList();
 
-            if (files is null || files.Count < 1) return null;
+            if (files?.Count < 1) return null;
 
             var post = files?.RandomElement();
 
