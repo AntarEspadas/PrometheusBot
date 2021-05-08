@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -17,6 +18,7 @@ namespace PrometheusBot.Modules.Fun.Danbooru
         private const string POSTS_API = "https://danbooru.donmai.us/post/index.json";
         private const string POSTS_COUNTS_API = "https://danbooru.donmai.us/counts/posts.json";
         private static readonly Random _random = new();
+        private static readonly TextInfo _textInfo = new CultureInfo("en-US").TextInfo;
 
         [Command("Feet")]
         [RequireNsfw]
@@ -33,6 +35,26 @@ namespace PrometheusBot.Modules.Fun.Danbooru
                 return CommandResult.FromError(CommandError.Unsuccessful, "Something went wrong. Maybe there are no available feet for that character?");
 
             var embed = GetEmbed(post);
+            embed.Title = "**Feet!**";
+            await ReplyAsync(embed: embed.Build());
+            return CommandResult.FromSuccess();
+        }
+
+        [Command("Danbooru")]
+        [RequireNsfw]
+        public async Task<RuntimeResult> RandomDanbooru(params string[] tags)
+        {
+            Post post = await RandomPost(tags);
+
+            if (post is null)
+                return CommandResult.FromError(CommandError.Unsuccessful, "Something went wrong. Maybe no posts matched the given tags?");
+
+            var formattedTags = tags
+                .Select(tag => tag.Replace('_', ' '))
+                .Select(tag => _textInfo.ToTitleCase(tag));
+            var embed = GetEmbed(post);
+            string title = tags.Any() ? string.Join(", ", formattedTags) : "No tags";
+            embed.Title = title;
             await ReplyAsync(embed: embed.Build());
             return CommandResult.FromSuccess();
         }
@@ -45,6 +67,7 @@ namespace PrometheusBot.Modules.Fun.Danbooru
             int? count = await Count(POSTS_COUNTS_API + arguments);
             count ??= 200;
             int pages = (int)Math.Ceiling(count.Value / 200f);
+            pages = Math.Min(1000, pages);
             arguments += $"&limit=200&page={_random.Next(1, pages + 1)}";
             List<Post> response = null;
             try
@@ -75,7 +98,6 @@ namespace PrometheusBot.Modules.Fun.Danbooru
             };
             EmbedBuilder embedBuilder = new()
             {
-                Title = "**Feet!**",
                 Description = $"[Source]({source})",
                 ImageUrl = post.file_url,
                 Footer = footerBuilder
