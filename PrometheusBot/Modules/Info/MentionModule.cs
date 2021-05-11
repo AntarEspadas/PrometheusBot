@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using PrometheusBot.Model;
 
 namespace PrometheusBot.Modules.Info
 {
@@ -13,8 +14,9 @@ namespace PrometheusBot.Modules.Info
         [MentionCommand]
         public async Task OnMention()
         {
-            string naturalPrefix = "navi";
-            string syntheticPrefix = "n.";
+            string[] prefixes = PrometheusModel.Instance.GetPrefixes(Context.User.Id, Context.Guild.Id, Context.Channel.Id);
+            string naturalPrefix = prefixes[0];
+            string syntheticPrefix = prefixes[1];
             List<EmbedFieldBuilder> fields = new()
             {
                 new EmbedFieldBuilder(){Value = $"{syntheticPrefix}help", Name = "Synthetic prefix:"},
