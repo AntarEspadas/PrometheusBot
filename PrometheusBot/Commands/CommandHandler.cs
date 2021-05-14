@@ -8,6 +8,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using PrometheusBot.Model;
+using PrometheusBot.Services.NonStandardCommands;
 
 namespace PrometheusBot.Commands
 {

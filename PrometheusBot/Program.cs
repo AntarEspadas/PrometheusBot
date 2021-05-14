@@ -9,6 +9,7 @@ using PrometheusBot.Commands;
 using PrometheusBot.Model;
 using PrometheusBot.Services;
 using PrometheusBot.Services.MessageHistory;
+using PrometheusBot.Services.NonStandardCommands;
 
 namespace PrometheusBot
 {

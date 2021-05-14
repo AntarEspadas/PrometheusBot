@@ -9,7 +9,7 @@ using PrometheusBot.Modules;
 using PrometheusBot.Extensions;
 using Discord;
 
-namespace PrometheusBot.Commands
+namespace PrometheusBot.Services.NonStandardCommands
 {
     public class NonStandardCommandService
     {
