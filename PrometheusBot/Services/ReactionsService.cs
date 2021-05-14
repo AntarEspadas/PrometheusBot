@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PrometheusBot.Model;
+using PrometheusBot.Model.Reactions;
+using PrometheusBot.Services.Settings;
 
-namespace PrometheusBot.Model.Reactions
+namespace PrometheusBot.Services
 {
-    public class CustomReactions
+    public class ReactionsService
     {
-        public static CustomReactions Instance { get; } = new();
         private DataAccess _data;
-        private CustomReactions()
+        public ReactionsService(SettingsService settings)
         {
-            _data = PrometheusModel.Instance.Data;
+            _data = settings.Data;
         }
         public void AddOrUpdate(ReactionModel reaction)
         {

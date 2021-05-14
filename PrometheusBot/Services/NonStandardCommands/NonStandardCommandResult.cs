@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord.Commands;
 
-namespace PrometheusBot.Commands
+namespace PrometheusBot.Services.NonStandardCommands
 {
     class NonStandardCommandResult : RuntimeResult
     {

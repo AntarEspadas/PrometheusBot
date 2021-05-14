@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace PrometheusBot.Model.Settings
+namespace PrometheusBot.Services.Settings
 {
     public struct SettingLookupInfo
     {

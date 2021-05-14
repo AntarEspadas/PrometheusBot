@@ -1,35 +1,44 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
 using PrometheusBot.Commands;
 using PrometheusBot.Model;
-using PrometheusBot.Modules.Utility.History;
+using PrometheusBot.Modules.Info;
+using PrometheusBot.Modules.Misc;
+using PrometheusBot.Services;
+using PrometheusBot.Services.MessageHistory;
+using PrometheusBot.Services.NonStandardCommands;
+using PrometheusBot.Services.Settings;
 
 namespace PrometheusBot
 {
     class Program
     {
-        public static string Directory { get; } = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+        public static string Directory { get; } = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         static async Task Main(string[] args)
         {
-            LocalSettings settings = LoadSettings();
+            LocalSettingsService localSettings = LoadSettings();
 
-            string settingsPath = System.IO.Path.Combine(Directory, "settings.json");
-            PrometheusModel.Instance.Initialize(settingsPath, settings.ConnectionString);
+            string settingsPath = Path.Combine(Directory, "settings.json");
+            SettingsService settings = new(settingsPath, localSettings.ConnectionString);
 
             DiscordSocketConfig config = new()
             {
                 MessageCacheSize = 100
             };
             DiscordSocketClient client = new(config);
-            
-            client.Log += Log;
-            client.MessageUpdated += MessageHistory.Instance.AddAsync;
-            client.MessageDeleted += MessageHistory.Instance.AddDeletedAsync;
 
-            await client.LoginAsync(TokenType.Bot, settings.DiscordToken);
+            MessageHistoryService messageHistory = new();
+
+            client.Log += Log;
+            client.MessageUpdated += messageHistory.AddAsync;
+            client.MessageDeleted += messageHistory.AddDeletedAsync;
+
+            await client.LoginAsync(TokenType.Bot, localSettings.DiscordToken);
             await client.StartAsync();
 
 
@@ -42,7 +51,8 @@ namespace PrometheusBot
             CommandService commands = new(commandsConfig);
             NonStandardCommandService nonStandardCommands = new(RunMode.Async);
 
-            CommandHandler commandHandler = new(client, commands, nonStandardCommands);
+            var services = GetServiceProvider(client, commands, nonStandardCommands, localSettings, messageHistory, settings);
+            CommandHandler commandHandler = new(services);
             await commandHandler.InstallCommandsAsync();
 
             try
@@ -61,9 +71,11 @@ namespace PrometheusBot
             return Task.CompletedTask;
         }
 
-        private static LocalSettings LoadSettings()
+        private static LocalSettingsService LoadSettings()
         {
-            LocalSettings settings = LocalSettings.Load();
+            string path = Path.Join(Directory, "LocalSettings.json");
+            LocalSettingsService settings = new(path);
+            settings.Load();
             if (!string.IsNullOrWhiteSpace(settings.DiscordToken)) return settings;
 
             //Token was not found, presumably first time running program. Prompt user for token
@@ -72,12 +84,33 @@ namespace PrometheusBot
                 Console.Write("Bot token: ");
                 settings.DiscordToken = Console.ReadLine();
             } while (string.IsNullOrWhiteSpace(settings.DiscordToken));
-            Console.WriteLine($"Saving settings. They can be changed later from file '{LocalSettings.Path}'");
+            Console.WriteLine($"Saving settings. They can be changed later from file '{settings.Path}'");
             if (!settings.Save())
             {
                 Console.WriteLine("Failed to write new settings. You will be promted for a token again next time the program runs");
             }
             return settings;
+        }
+        private static IServiceProvider GetServiceProvider(
+            DiscordSocketClient client,
+            CommandService commands,
+            NonStandardCommandService nonStandardCommands,
+            LocalSettingsService localSettings,
+            MessageHistoryService messageHistory,
+            SettingsService settings)
+        {
+            ReactionsService reactions = new(settings);
+
+            var services = new ServiceCollection()
+                .AddSingleton(client)
+                .AddSingleton(commands)
+                .AddSingleton(nonStandardCommands)
+                .AddSingleton(localSettings)
+                .AddSingleton(messageHistory)
+                .AddSingleton(settings)
+                .AddSingleton(reactions);
+
+            return services.BuildServiceProvider();
         }
     }
 }

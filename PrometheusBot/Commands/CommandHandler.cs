@@ -8,6 +8,8 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using PrometheusBot.Model;
+using PrometheusBot.Services.NonStandardCommands;
+using PrometheusBot.Services.Settings;
 
 namespace PrometheusBot.Commands
 {
@@ -16,12 +18,16 @@ namespace PrometheusBot.Commands
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commands;
         private readonly NonStandardCommandService _nonStandardCommands;
+        private readonly SettingsService _settings;
+        private readonly IServiceProvider _services;
 
-        public CommandHandler(DiscordSocketClient client, CommandService commands, NonStandardCommandService nonStandardCommands)
+        public CommandHandler(IServiceProvider services)
         {
-            _client = client;
-            _commands = commands;
-            _nonStandardCommands = nonStandardCommands;
+            _client = (DiscordSocketClient)services.GetService(typeof(DiscordSocketClient));
+            _commands = (CommandService)services.GetService(typeof(CommandService));
+            _nonStandardCommands = (NonStandardCommandService)services.GetService(typeof(NonStandardCommandService));
+            _settings = (SettingsService)services.GetService(typeof(SettingsService));
+            _services = services;
         }
         public async Task InstallCommandsAsync()
         {
@@ -31,7 +37,7 @@ namespace PrometheusBot.Commands
             _nonStandardCommands.CommandExecuted += OnCommandExecutedAsync;
 
             Assembly assembly = Assembly.GetEntryAssembly();
-            await _commands.AddModulesAsync(assembly, null);
+            await _commands.AddModulesAsync(assembly, _services);
             await _nonStandardCommands.AddModulesAsync(assembly);
         }
 
@@ -52,7 +58,7 @@ namespace PrometheusBot.Commands
             ulong UserId = context.User.Id;
             ulong? GuildId = context.Guild?.Id;
             ulong ChannelId = context.Channel.Id;
-            string[] prefixes = PrometheusModel.Instance.GetPrefixes(UserId, GuildId, ChannelId);
+            string[] prefixes = _settings.GetPrefixes(UserId, GuildId, ChannelId);
             string naturalPrefix = prefixes[0];
             string syntheticPrefix = prefixes[1];
 
@@ -62,17 +68,14 @@ namespace PrometheusBot.Commands
                 message.HasStringPrefix(naturalPrefix + ", ", ref argPos) ||
                 message.HasMentionPrefix(_client.CurrentUser, ref argPos)))
             {
-                await _nonStandardCommands.ExecuteAsync(context);
+                await _nonStandardCommands.ExecuteAsync(context, _services);
                 return;
             }
 
 
             // Execute the command with the command context we just
             // created, along with the service provider for precondition checks.
-            await _commands.ExecuteAsync(
-                context: context,
-                argPos: argPos,
-                services: null);
+            await _commands.ExecuteAsync(context, argPos, _services);
         }
 
         private Task OnCommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)

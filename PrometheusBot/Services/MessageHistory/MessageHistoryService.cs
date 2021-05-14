@@ -5,16 +5,14 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PrometheusBot.Modules.Utility.History
+namespace PrometheusBot.Services.MessageHistory
 {
-    class MessageHistory
+    public class MessageHistoryService
     {
-        public static MessageHistory Instance { get; } = new MessageHistory();
-
         public Dictionary<ulong, Dictionary<ulong, Dictionary<ulong, MessageHistoryList>>> Guilds { get; private set; }
         public MessageHistoryList this[ulong guildId, ulong channelId, ulong messageId] { get => GetHistory(guildId, channelId, messageId); }
 
-        private MessageHistory()
+        public MessageHistoryService()
         {
             Guilds = new Dictionary<ulong, Dictionary<ulong, Dictionary<ulong, MessageHistoryList>>>();
         }

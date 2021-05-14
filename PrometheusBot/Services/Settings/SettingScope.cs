@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PrometheusBot.Model.Settings
+namespace PrometheusBot.Services.Settings
 {
     public enum SettingScope
     {

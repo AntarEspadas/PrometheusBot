@@ -4,29 +4,23 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
-using PrometheusBot.Model.Settings;
+using PrometheusBot.Model;
 
-namespace PrometheusBot.Model
+namespace PrometheusBot.Services.Settings
 {
-    public class PrometheusModel
+    public class SettingsService
     {
-        public static PrometheusModel Instance { get; } = new();
-
         private Dictionary<string, SettingModel> _settingsInfo;
         internal DataAccess Data { get; private set; }
 
-        private PrometheusModel()
-        {
-
-        }
-
-        public void Initialize(string settingsPath, string connectionString)
+        public SettingsService(string settingsPath, string connectionString)
         {
             string json = File.ReadAllText(settingsPath);
             _settingsInfo = JsonConvert.DeserializeObject<Dictionary<string, SettingModel>>(json);
 
             Data = new(connectionString);
         }
+
         public SettingModel GetSettingInfo(string setting)
         {
             _settingsInfo.TryGetValue(setting, out var result);
