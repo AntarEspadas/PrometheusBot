@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using PrometheusBot.Extensions;
-using PrometheusBot.Model;
-using PrometheusBot.Model.Settings;
+using PrometheusBot.Services.Settings;
 
 namespace PrometheusBot.Modules.Config
 {
@@ -17,13 +16,20 @@ namespace PrometheusBot.Modules.Config
         [Alias("config", "settings")]
         public class Configuration : ModuleBase<SocketCommandContext>
         {
-            static internal readonly PrometheusModel model = PrometheusModel.Instance;
             static internal readonly Dictionary<string, List<string>> settingsGroups;
+
+            private readonly SettingsService _settings;
 
             static Configuration()
             {
                 settingsGroups = new Dictionary<string, List<string>>();
             }
+
+            public Configuration(SettingsService settings)
+            {
+                _settings = settings;
+            }
+
             [Command("")]
             public async Task Configure(string scope, string setting, string action, IChannel channel = null)
                 => await GenericConfigure(scope, setting, action, channel);
@@ -40,7 +46,7 @@ namespace PrometheusBot.Modules.Config
                     await ReplyAsync($"Unknown value `{scope}`, must be one of `user` or `server`");
                     return;
                 }
-                SettingModel settingModel = model.GetSettingInfo(setting);
+                SettingModel settingModel = _settings.GetSettingInfo(setting);
                 if (settingModel is null || !settingModel.Visible)
                 {
                     await base.ReplyAsync($"Unknown setting `{setting}`");
@@ -123,15 +129,15 @@ namespace PrometheusBot.Modules.Config
                 switch (action)
                 {
                     case "set":
-                        model.SetSetting(info, value);
+                        _settings.SetSetting(info, value);
                         await ReplyAsync($"The value for setting `{setting}` was changed to `{objValue}`");
                         break;
                     case "reset":
-                        model.SetSetting(info, null);
+                        _settings.SetSetting(info, null);
                         await ReplyAsync($"Value for setting `{setting}` has been set back to its default");
                         break;
                     case "get":
-                        model.GetSetting(info, out objValue, true);
+                        _settings.GetSetting(info, out objValue, true);
                         await ReplyAsync($"The value for setting `{setting}` is currently `{objValue}`");
                         break;
                 }
@@ -160,7 +166,7 @@ namespace PrometheusBot.Modules.Config
                 if (user.GuildPermissions.Has(GuildPermission.Administrator))
                     return true;
                 SettingLookupInfo info = new("admin:bot-role-name") { GId = Context.Guild.Id };
-                model.GetSetting(info, out string roleName, true);
+                _settings.GetSetting(info, out string roleName, true);
                 if (settingModel.PermissionRole && user.HasRoleName(roleName))
                     return true;
                 foreach (var permission in settingModel.GuildPermissions)

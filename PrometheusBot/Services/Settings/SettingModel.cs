@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using Discord;
 using System.ComponentModel;
 
-namespace PrometheusBot.Model.Settings
+namespace PrometheusBot.Services.Settings
 {
     public class SettingModel
     {

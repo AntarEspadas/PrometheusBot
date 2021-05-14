@@ -9,6 +9,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using PrometheusBot.Model;
 using PrometheusBot.Services.NonStandardCommands;
+using PrometheusBot.Services.Settings;
 
 namespace PrometheusBot.Commands
 {
@@ -17,6 +18,7 @@ namespace PrometheusBot.Commands
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commands;
         private readonly NonStandardCommandService _nonStandardCommands;
+        private readonly SettingsService _settings;
         private readonly IServiceProvider _services;
 
         public CommandHandler(IServiceProvider services)
@@ -24,6 +26,7 @@ namespace PrometheusBot.Commands
             _client = (DiscordSocketClient)services.GetService(typeof(DiscordSocketClient));
             _commands = (CommandService)services.GetService(typeof(CommandService));
             _nonStandardCommands = (NonStandardCommandService)services.GetService(typeof(NonStandardCommandService));
+            _settings = (SettingsService)services.GetService(typeof(SettingsService));
             _services = services;
         }
         public async Task InstallCommandsAsync()
@@ -55,7 +58,7 @@ namespace PrometheusBot.Commands
             ulong UserId = context.User.Id;
             ulong? GuildId = context.Guild?.Id;
             ulong ChannelId = context.Channel.Id;
-            string[] prefixes = PrometheusModel.Instance.GetPrefixes(UserId, GuildId, ChannelId);
+            string[] prefixes = _settings.GetPrefixes(UserId, GuildId, ChannelId);
             string naturalPrefix = prefixes[0];
             string syntheticPrefix = prefixes[1];
 
@@ -65,7 +68,7 @@ namespace PrometheusBot.Commands
                 message.HasStringPrefix(naturalPrefix + ", ", ref argPos) ||
                 message.HasMentionPrefix(_client.CurrentUser, ref argPos)))
             {
-                await _nonStandardCommands.ExecuteAsync(context);
+                await _nonStandardCommands.ExecuteAsync(context, _services);
                 return;
             }
 

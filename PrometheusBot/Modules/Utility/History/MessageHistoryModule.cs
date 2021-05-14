@@ -6,19 +6,20 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using PrometheusBot.Extensions;
-using PrometheusBot.Model;
-using PrometheusBot.Model.Settings;
 using PrometheusBot.Services.MessageHistory;
+using PrometheusBot.Services.Settings;
 
 namespace PrometheusBot.Modules.Utility.History
 {
     public class MessageHistoryModule : ModuleBase<SocketCommandContext>
     {
         private readonly MessageHistoryService _messageHistory;
+        private readonly SettingsService _settings;
 
-        public MessageHistoryModule(MessageHistoryService messageHistory)
+        public MessageHistoryModule(MessageHistoryService messageHistory, SettingsService settings)
         {
             _messageHistory = messageHistory;
+            _settings = settings;
         }
 
         [Command("unedit")]
@@ -27,9 +28,8 @@ namespace PrometheusBot.Modules.Utility.History
             IMessage message = await Context.Message.GetReplyingMessageAsync();
             if (message.EditedTimestamp is null)
                 return;
-            var model = PrometheusModel.Instance;
             SettingLookupInfo info = new("unedit:opt-out") { GId = Context.Guild.Id, CId = Context.Channel.Id };
-            model.GetSetting(info, out bool optOut, true);
+            _settings.GetSetting(info, out bool optOut, true);
             if (optOut)
             {
                 await ReplyAsync("Sorry, that command is disabled for this channel or server");
@@ -37,7 +37,7 @@ namespace PrometheusBot.Modules.Utility.History
             }
             info.CId = null;
             info.UId = message.Author.Id;
-            model.GetSetting(info, out optOut, true);
+            _settings.GetSetting(info, out optOut, true);
             if (optOut)
             {
                 await ReplyAsync("Sorry, the targeted user has opted out of this feature");
@@ -51,9 +51,8 @@ namespace PrometheusBot.Modules.Utility.History
         [Command("undelete")]
         public async Task UndeleteAsync()
         {
-            var model = PrometheusModel.Instance;
             SettingLookupInfo info = new("undelete:opt-out") { GId = Context.Guild.Id, CId = Context.Channel.Id };
-            model.GetSetting(info, out bool optOut, true);
+            _settings.GetSetting(info, out bool optOut, true);
             if (optOut)
             {
                 await ReplyAsync("Sorry, that command is disabled for this channel or server");
@@ -64,7 +63,7 @@ namespace PrometheusBot.Modules.Utility.History
                 return;
             info.CId = null;
             info.UId = messages.First.Value.Author.Id;
-            model.GetSetting(info, out optOut, true);
+            _settings.GetSetting(info, out optOut, true);
             if (optOut)
             {
                 await ReplyAsync("Sorry, the latest user to have deleted a message in this channel has opted out of this feature");

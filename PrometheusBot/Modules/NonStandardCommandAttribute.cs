@@ -16,6 +16,6 @@ namespace PrometheusBot.Modules
         {
         }
 
-        public abstract bool Validate(ICommandContext context);
+        public abstract bool Validate(ICommandContext context, IServiceProvider services);
     }
 }

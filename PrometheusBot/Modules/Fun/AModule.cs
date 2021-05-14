@@ -38,7 +38,7 @@ namespace PrometheusBot.Modules.Fun
                 _a = new HashSet<string>(new[] { "a", "A" });
             }
         }
-        public override bool Validate(ICommandContext context)
+        public override bool Validate(ICommandContext context, IServiceProvider services)
         {
             string strippedContent = StripNonSpacingMarks(context.Message.Content);
             strippedContent = strippedContent.Trim();

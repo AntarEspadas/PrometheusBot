@@ -8,6 +8,7 @@ using Discord.Commands;
 using PrometheusBot.Modules;
 using PrometheusBot.Extensions;
 using Discord;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace PrometheusBot.Services.NonStandardCommands
 {
@@ -44,23 +45,23 @@ namespace PrometheusBot.Services.NonStandardCommands
 
             return Task.CompletedTask;
         }
-        public async Task<IResult> ExecuteAsync(ICommandContext context)
+        public async Task<IResult> ExecuteAsync(ICommandContext context, IServiceProvider services = null)
         {
-            var task = Task.Run(() => ExecuteAsyncPrivate(context));
+            var task = Task.Run(() => ExecuteAsyncPrivate(context, services));
             _ = task.ContinueWith(task => OnCommandExecuted(context, task));
             if (_runMode == RunMode.Sync)
                 return await task;
             return new NonStandardCommandResult();
         }
-        private IResult ExecuteAsyncPrivate(ICommandContext context)
+        private IResult ExecuteAsyncPrivate(ICommandContext context, IServiceProvider services)
         {
-            var method = GetFirstValid(context);
+            var method = GetFirstValid(context, services);
 
             if (method is null) return null;
 
             Type declaringType = method.DeclaringType;
 
-            object module = Activator.CreateInstance(declaringType);
+            object module = ActivatorUtilities.CreateInstance(services, declaringType);
 
             var setContext = moduleBase.GetMethod("SetContext", new[] { typeof(ICommandContext) });
             setContext.Invoke(module, new[] { context });
@@ -81,14 +82,14 @@ namespace PrometheusBot.Services.NonStandardCommands
                 return new NonStandardCommandResult(CommandError.Exception, ex.Message);
             }
         }
-        private MethodInfo GetFirstValid(ICommandContext context)
+        private MethodInfo GetFirstValid(ICommandContext context, IServiceProvider services)
         {
             foreach (MethodInfo method in _methods)
             {
                 bool valid = false;
                 try
                 {
-                    valid = method.GetCustomAttribute<NonStandardCommandAttribute>().Validate(context);
+                    valid = method.GetCustomAttribute<NonStandardCommandAttribute>().Validate(context, services);
                 }
                 catch { }
                 if (valid) return method;

@@ -8,6 +8,7 @@ using PrometheusBot.Model.Reactions;
 using PrometheusBot.Extensions;
 using Discord;
 using PrometheusBot.Commands.Preconditions;
+using PrometheusBot.Services;
 
 namespace PrometheusBot.Modules.Misc
 {
@@ -15,7 +16,12 @@ namespace PrometheusBot.Modules.Misc
     {
         internal static readonly Dictionary<ICommandContext, Tuple<IList<ReactionMatch>, bool>> pendingMatches = new();
 
-        private static readonly CustomReactions _reactions = CustomReactions.Instance;
+        private readonly ReactionsService _reactions;
+
+        public ReactionsModule(ReactionsService reactions)
+        {
+            _reactions = reactions;
+        }
 
         [Command("Reaction")]
         public async Task<RuntimeResult> AddOrUpdateReaction(string reactionId, Arguments args)
@@ -179,17 +185,20 @@ namespace PrometheusBot.Modules.Misc
     }
     class ReactCommandAttribute : NonStandardCommandAttribute
     {
-        private static readonly CustomReactions _reactions = CustomReactions.Instance;
-        public override bool Validate(ICommandContext context)
+        //TODO: Properly inject dependency
+        private ReactionsService Reactions { get; set; }
+        public override bool Validate(ICommandContext context, IServiceProvider services)
         {
+            Reactions = (ReactionsService)services.GetService(typeof(ReactionsService));
+
             string message = context.Message.Content;
-            IList<ReactionMatch> matches = _reactions.GetStrictMatchingReactions(context.Guild.Id, message);
+            IList<ReactionMatch> matches = Reactions.GetStrictMatchingReactions(context.Guild.Id, message);
             if (matches.Count > 0)
             {
                 ReactionsModule.pendingMatches[context] = new(matches, true);
                 return true;
             }
-            matches = _reactions.GetMatchingReactions(context.Guild.Id, message);
+            matches = Reactions.GetMatchingReactions(context.Guild.Id, message);
             bool valid = matches.Count > 0;
             if (valid)
                 ReactionsModule.pendingMatches[context] = new(matches, false);

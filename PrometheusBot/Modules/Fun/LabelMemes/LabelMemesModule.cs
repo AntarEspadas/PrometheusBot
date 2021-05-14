@@ -79,7 +79,7 @@ namespace PrometheusBot.Modules.Fun.LabelMemes
     class LabelMemeCommandAttribute : NonStandardCommandAttribute
     {
         private static DateTime lastRead;
-        public override bool Validate(ICommandContext context)
+        public override bool Validate(ICommandContext context, IServiceProvider services)
         {
             try
             {

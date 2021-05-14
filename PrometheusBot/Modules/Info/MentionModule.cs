@@ -6,15 +6,23 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using PrometheusBot.Model;
+using PrometheusBot.Services.Settings;
 
 namespace PrometheusBot.Modules.Info
 {
     public class MentionModule : ModuleBase<SocketCommandContext>
     {
+        private readonly SettingsService _settings;
+
+        public MentionModule(SettingsService settings)
+        {
+            _settings = settings;
+        }
+
         [MentionCommand]
         public async Task OnMention()
         {
-            string[] prefixes = PrometheusModel.Instance.GetPrefixes(Context.User.Id, Context.Guild.Id, Context.Channel.Id);
+            string[] prefixes = _settings.GetPrefixes(Context.User.Id, Context.Guild.Id, Context.Channel.Id);
             string naturalPrefix = prefixes[0];
             string syntheticPrefix = prefixes[1];
             List<EmbedFieldBuilder> fields = new()
@@ -33,7 +41,7 @@ namespace PrometheusBot.Modules.Info
         }
         private class MentionCommandAttribute : NonStandardCommandAttribute
         {
-            public override bool Validate(ICommandContext context)
+            public override bool Validate(ICommandContext context, IServiceProvider services)
             {
                 string content = context.Message.Content;
                 if (string.IsNullOrEmpty(content) || content.Length < 4 || content[0] != '<' || content[1] != '@' || content[^1] != '>')

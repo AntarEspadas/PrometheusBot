@@ -7,9 +7,12 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using PrometheusBot.Commands;
 using PrometheusBot.Model;
+using PrometheusBot.Modules.Info;
+using PrometheusBot.Modules.Misc;
 using PrometheusBot.Services;
 using PrometheusBot.Services.MessageHistory;
 using PrometheusBot.Services.NonStandardCommands;
+using PrometheusBot.Services.Settings;
 
 namespace PrometheusBot
 {
@@ -18,10 +21,10 @@ namespace PrometheusBot
         public static string Directory { get; } = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         static async Task Main(string[] args)
         {
-            LocalSettingsService settings = LoadSettings();
+            LocalSettingsService localSettings = LoadSettings();
 
             string settingsPath = Path.Combine(Directory, "settings.json");
-            PrometheusModel.Instance.Initialize(settingsPath, settings.ConnectionString);
+            SettingsService settings = new(settingsPath, localSettings.ConnectionString);
 
             DiscordSocketConfig config = new()
             {
@@ -35,7 +38,7 @@ namespace PrometheusBot
             client.MessageUpdated += messageHistory.AddAsync;
             client.MessageDeleted += messageHistory.AddDeletedAsync;
 
-            await client.LoginAsync(TokenType.Bot, settings.DiscordToken);
+            await client.LoginAsync(TokenType.Bot, localSettings.DiscordToken);
             await client.StartAsync();
 
 
@@ -48,7 +51,7 @@ namespace PrometheusBot
             CommandService commands = new(commandsConfig);
             NonStandardCommandService nonStandardCommands = new(RunMode.Async);
 
-            var services = GetServiceProvider(client, commands, nonStandardCommands, settings, messageHistory);
+            var services = GetServiceProvider(client, commands, nonStandardCommands, localSettings, messageHistory, settings);
             CommandHandler commandHandler = new(services);
             await commandHandler.InstallCommandsAsync();
 
@@ -93,14 +96,19 @@ namespace PrometheusBot
             CommandService commands,
             NonStandardCommandService nonStandardCommands,
             LocalSettingsService localSettings,
-            MessageHistoryService messageHistory)
+            MessageHistoryService messageHistory,
+            SettingsService settings)
         {
+            ReactionsService reactions = new(settings);
+
             var services = new ServiceCollection()
                 .AddSingleton(client)
                 .AddSingleton(commands)
                 .AddSingleton(nonStandardCommands)
                 .AddSingleton(localSettings)
-                .AddSingleton(messageHistory);
+                .AddSingleton(messageHistory)
+                .AddSingleton(settings)
+                .AddSingleton(reactions);
 
             return services.BuildServiceProvider();
         }
