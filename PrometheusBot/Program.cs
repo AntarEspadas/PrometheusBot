@@ -7,8 +7,8 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using PrometheusBot.Commands;
 using PrometheusBot.Model;
-using PrometheusBot.Modules.Utility.History;
 using PrometheusBot.Services;
+using PrometheusBot.Services.MessageHistory;
 
 namespace PrometheusBot
 {
@@ -27,10 +27,12 @@ namespace PrometheusBot
                 MessageCacheSize = 100
             };
             DiscordSocketClient client = new(config);
-            
+
+            MessageHistoryService messageHistory = new();
+
             client.Log += Log;
-            client.MessageUpdated += MessageHistory.Instance.AddAsync;
-            client.MessageDeleted += MessageHistory.Instance.AddDeletedAsync;
+            client.MessageUpdated += messageHistory.AddAsync;
+            client.MessageDeleted += messageHistory.AddDeletedAsync;
 
             await client.LoginAsync(TokenType.Bot, settings.DiscordToken);
             await client.StartAsync();
@@ -45,7 +47,7 @@ namespace PrometheusBot
             CommandService commands = new(commandsConfig);
             NonStandardCommandService nonStandardCommands = new(RunMode.Async);
 
-            var services = GetServiceProvider(client, commands, nonStandardCommands, settings);
+            var services = GetServiceProvider(client, commands, nonStandardCommands, settings, messageHistory);
             CommandHandler commandHandler = new(services);
             await commandHandler.InstallCommandsAsync();
 
@@ -85,13 +87,19 @@ namespace PrometheusBot
             }
             return settings;
         }
-        private static IServiceProvider GetServiceProvider(DiscordSocketClient client, CommandService commands, NonStandardCommandService nonStandardCommands, LocalSettingsService localSettings)
+        private static IServiceProvider GetServiceProvider(
+            DiscordSocketClient client,
+            CommandService commands,
+            NonStandardCommandService nonStandardCommands,
+            LocalSettingsService localSettings,
+            MessageHistoryService messageHistory)
         {
             var services = new ServiceCollection()
                 .AddSingleton(client)
                 .AddSingleton(commands)
                 .AddSingleton(nonStandardCommands)
-                .AddSingleton(localSettings);
+                .AddSingleton(localSettings)
+                .AddSingleton(messageHistory);
 
             return services.BuildServiceProvider();
         }

@@ -8,11 +8,19 @@ using Discord.Commands;
 using PrometheusBot.Extensions;
 using PrometheusBot.Model;
 using PrometheusBot.Model.Settings;
+using PrometheusBot.Services.MessageHistory;
 
 namespace PrometheusBot.Modules.Utility.History
 {
     public class MessageHistoryModule : ModuleBase<SocketCommandContext>
     {
+        private readonly MessageHistoryService _messageHistory;
+
+        public MessageHistoryModule(MessageHistoryService messageHistory)
+        {
+            _messageHistory = messageHistory;
+        }
+
         [Command("unedit")]
         public async Task UneditAsync()
         {
@@ -35,7 +43,7 @@ namespace PrometheusBot.Modules.Utility.History
                 await ReplyAsync("Sorry, the targeted user has opted out of this feature");
                 return;
             }
-            var messages = MessageHistory.Instance.GetHistory(message);
+            var messages = _messageHistory.GetHistory(message);
             if (messages is null)
                 return;
             _ = SendAllHistory(messages);
@@ -51,7 +59,7 @@ namespace PrometheusBot.Modules.Utility.History
                 await ReplyAsync("Sorry, that command is disabled for this channel or server");
                 return;
             }
-            var messages = MessageHistory.Instance.GetLastDeletedHistory(Context.Message.Channel);
+            var messages = _messageHistory.GetLastDeletedHistory(Context.Message.Channel);
             if (messages is null)
                 return;
             info.CId = null;
