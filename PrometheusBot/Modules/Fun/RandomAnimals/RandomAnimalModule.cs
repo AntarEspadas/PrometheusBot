@@ -1,25 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Discord.Commands;
-using System.Net.Http;
 using System.Net;
 using Newtonsoft.Json;
 using Discord;
-using PrometheusBot.Model;
+using PrometheusBot.Services;
 
 namespace PrometheusBot.Modules.Fun.RandomAnimals
 {
     public class RandomAnimalModule : ModuleBase<SocketCommandContext>
     {
-        private static readonly string _catApiKey;
-        private static readonly string _dogApiKey;
+        private readonly string _catApiKey;
+        private readonly string _dogApiKey;
 
-        static RandomAnimalModule()
+        public RandomAnimalModule(LocalSettingsService settings)
         {
-            var settings = LocalSettings.Load();
             _catApiKey = settings.CatApiKey;
             _dogApiKey = settings.DogApiKey;
         }

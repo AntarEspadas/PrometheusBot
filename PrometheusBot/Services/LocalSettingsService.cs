@@ -2,38 +2,37 @@
 using System.IO;
 using Newtonsoft.Json;
 
-namespace PrometheusBot.Model
+namespace PrometheusBot.Services
 {
-    class LocalSettings
+    public class LocalSettingsService
     {
-
-        public static string Path { get; } = System.IO.Path.Combine(Program.Directory, "LocalSettings.json");
+        [JsonIgnore]
+        public string Path { get; }
 
         public string DiscordToken { get; set; }
         public string ConnectionString { get; set; } = "Server=localhost;Port=3306;database=PrometheusDB;user id=PrometheusBot;password=PrometheusBot";
         public string CatApiKey { get; set; }
         public string DogApiKey { get; set; }
 
-        private LocalSettings()
+        public LocalSettingsService(string path)
         {
-
+            Path = path;
         }
 
-        public static LocalSettings Load()
+        public bool Load()
         {
-            //Try to read the settings file, if it fails (because the file doesn't exist, is improperly formatted, etc.) LocalSettings instance with default values
-            LocalSettings localSettings = null;
+            //Try to read the settings file, if it fails (because the file doesn't exist, is improperly formatted, etc.) return false
 
             try
             {
                 string json = File.ReadAllText(Path);
-                localSettings = JsonConvert.DeserializeObject<LocalSettings>(json);
+                JsonConvert.PopulateObject(json, this);
+                return true;
             }
-            catch { }
-
-            localSettings ??= new();
-
-            return localSettings;
+            catch
+            {
+                return false;
+            }
         }
 
         public bool Save()
@@ -45,7 +44,7 @@ namespace PrometheusBot.Model
                 File.WriteAllText(Path, json);
                 return true;
             }
-            catch (Exception)
+            catch
             {
                 return false;
             }

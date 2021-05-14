@@ -16,12 +16,14 @@ namespace PrometheusBot.Commands
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commands;
         private readonly NonStandardCommandService _nonStandardCommands;
+        private readonly IServiceProvider _services;
 
-        public CommandHandler(DiscordSocketClient client, CommandService commands, NonStandardCommandService nonStandardCommands)
+        public CommandHandler(IServiceProvider services)
         {
-            _client = client;
-            _commands = commands;
-            _nonStandardCommands = nonStandardCommands;
+            _client = (DiscordSocketClient)services.GetService(typeof(DiscordSocketClient));
+            _commands = (CommandService)services.GetService(typeof(CommandService));
+            _nonStandardCommands = (NonStandardCommandService)services.GetService(typeof(NonStandardCommandService));
+            _services = services;
         }
         public async Task InstallCommandsAsync()
         {
@@ -31,7 +33,7 @@ namespace PrometheusBot.Commands
             _nonStandardCommands.CommandExecuted += OnCommandExecutedAsync;
 
             Assembly assembly = Assembly.GetEntryAssembly();
-            await _commands.AddModulesAsync(assembly, null);
+            await _commands.AddModulesAsync(assembly, _services);
             await _nonStandardCommands.AddModulesAsync(assembly);
         }
 
@@ -69,10 +71,7 @@ namespace PrometheusBot.Commands
 
             // Execute the command with the command context we just
             // created, along with the service provider for precondition checks.
-            await _commands.ExecuteAsync(
-                context: context,
-                argPos: argPos,
-                services: null);
+            await _commands.ExecuteAsync(context, argPos, _services);
         }
 
         private Task OnCommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
