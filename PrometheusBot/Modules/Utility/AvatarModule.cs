@@ -17,5 +17,13 @@ namespace PrometheusBot.Modules.Utility
             string pfp = user.GetAvatarUrl(size:256);
             await ReplyAsync(pfp);
         }
+
+        [Command("Avatar")]
+        [Alias("Profile", "pfp")]
+        public async Task Avatar()
+        {
+            var user = Context.Message.Author;
+            await Avatar(user);
+        }
     }
 }
