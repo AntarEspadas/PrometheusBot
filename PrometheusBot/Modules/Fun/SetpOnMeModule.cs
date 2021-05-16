@@ -21,6 +21,7 @@ namespace PrometheusBot.Modules.Fun
 
         [Command("Step on me")]
         [Alias("Abuse me")]
+        [Summary("Have the bot step on you.")]
         public async Task StepOnMe()
         {
             await ReplyAsync(_replies.RandomElement());

@@ -11,6 +11,9 @@ namespace PrometheusBot.Modules.Fun
 {
     public class FakeQuoteModule : ModuleBase<SocketCommandContext>
     {
+
+        private const string summary = "Turns text into a fake quote by a famous person.";
+
         [Priority(-100)]
         [RandomFakeQuoteCommand]
         public async Task RandomFakeQuote()
@@ -19,6 +22,7 @@ namespace PrometheusBot.Modules.Fun
         }
         [Command("FakeQuote")]
         [Alias("Quote", "Fake", "Gandhi")]
+        [Summary(summary)]
         public async Task FakeQuote()
         {
             var message = await Context.Message.GetReplyingMessageAsync();
@@ -26,7 +30,10 @@ namespace PrometheusBot.Modules.Fun
         }
         [Command("FakeQuote")]
         [Alias("Quote", "Fake", "Gandhi")]
-        public async Task FakeQuote([Remainder] string text)
+        [Summary(summary)]
+        public async Task FakeQuote(
+            [Summary("The text to quote.")]
+            [Remainder] string text)
         {
             string[,] people = {
                 {"Gandhi","https://upload.wikimedia.org/wikipedia/commons/d/d1/Portrait_Gandhi.jpg" },

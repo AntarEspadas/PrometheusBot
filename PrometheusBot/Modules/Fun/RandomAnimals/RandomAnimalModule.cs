@@ -20,13 +20,19 @@ namespace PrometheusBot.Modules.Fun.RandomAnimals
         }
 
         [Command("Cat")]
-        public async Task<RuntimeResult> RandomCat(string fileType = null)
+        [Summary("Gets a random cat image.")]
+        public async Task<RuntimeResult> RandomCat(
+            [Summary("'gif' or 'static'")]
+            string fileType = null)
         {
             return await GetAndSendAnimalAsync(Animal.Cat, fileType);
         }
 
         [Command("Dog")]
-        public async Task<RuntimeResult> RandomDog(string fileType = null)
+        [Summary("Gets a random dog image.")]
+        public async Task<RuntimeResult> RandomDog(
+            [Summary("'gif' or 'static'")]
+            string fileType = null)
         {
             return await GetAndSendAnimalAsync(Animal.Dog, fileType);
         }

@@ -24,6 +24,7 @@ namespace PrometheusBot.Modules.Misc
         }
 
         [Command("Reaction")]
+        [Summary("Add a custom reaction or edit an existing one.")]
         public async Task<RuntimeResult> AddOrUpdateReaction(string reactionId, Arguments args)
         {
             string invalidLength = "{0} length must be at most {1} characteres";
@@ -53,6 +54,7 @@ namespace PrometheusBot.Modules.Misc
 
         [Command("Delete reaction")]
         [Alias("Remove reaction")]
+        [Summary("Delete a custom reaction")]
         public async Task<RuntimeResult> DeleteReaction(string reactionId)
         {
             RuntimeResult notExists = CommandResult.FromError(CommandError.Unsuccessful, $"Reaction `{reactionId}` does not exist");
@@ -67,11 +69,13 @@ namespace PrometheusBot.Modules.Misc
         }
 
         [Command("List reactions")]
+        [Summary("Show the list of custom reactions.")]
         public async Task<RuntimeResult> ListReactions()
         {
             return await ListReactions(new());
         }
         [Command("List reactions")]
+        [Summary("Show the list of custom reactions.")]
         public async Task<RuntimeResult> ListReactions(Arguments args)
         {
             ReactionModel reaction = new(Context.Guild.Id, null)
@@ -88,7 +92,11 @@ namespace PrometheusBot.Modules.Misc
         }
         [Command("View reaction")]
         [Alias("Get reaction")]
-        public async Task<RuntimeResult> GetReaction(string id)
+        [Summary("Show all of the information for a specified custom reaction")]
+        public async Task<RuntimeResult> GetReaction(
+            [Summary("The ID for the reaction")]
+            string id
+            )
         {
             var reaction = _reactions.GetReaction(Context.Guild.Id, id);
             if (reaction is null)

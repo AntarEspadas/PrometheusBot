@@ -21,8 +21,11 @@ namespace PrometheusBot.Modules.Fun.Danbooru
         private static readonly TextInfo _textInfo = new CultureInfo("en-US").TextInfo;
 
         [Command("Feet")]
+        [Summary("Get a random feet image from danbooru.")]
         [RequireNsfw]
-        public async Task<RuntimeResult> Feet(string character = null)
+        public async Task<RuntimeResult> Feet(
+            [Summary("The character to search feet for")]
+            string character = null)
         {
             List<string> tags = new() { "feet", "rating:safe" };
 
@@ -41,8 +44,11 @@ namespace PrometheusBot.Modules.Fun.Danbooru
         }
 
         [Command("Danbooru")]
+        [Summary("Gets a random image from Danbooru.")]
         [RequireNsfw]
-        public async Task<RuntimeResult> RandomDanbooru(params string[] tags)
+        public async Task<RuntimeResult> RandomDanbooru(
+            [Summary("Danbooru tags for the image")]
+            params string[] tags)
         {
             Post post = await RandomPost(tags);
 

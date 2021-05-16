@@ -11,6 +11,7 @@ namespace PrometheusBot.Modules.Utility
     public class PingModule : ModuleBase<SocketCommandContext>
     {
         [Command("Ping")]
+        [Summary("Test the bot's latency.")]
         public async Task Ping()
         {
             EmbedBuilder embedBuilder = new()

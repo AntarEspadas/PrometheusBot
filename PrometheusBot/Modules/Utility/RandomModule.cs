@@ -12,7 +12,10 @@ namespace PrometheusBot.Modules.Utility
     {
         private static readonly Random _random = new();
         [Command("Choose")]
-        public async Task<RuntimeResult> Choose(params string[] options)
+        [Summary("Make the bot pick a random item from a list of options.")]
+        public async Task<RuntimeResult> Choose(
+            [Summary("The options to choose from.")]
+            params string[] options)
         {
             if (options.Length < 2)
                 return CommandResult.FromError(CommandError.Unsuccessful, "Not much of a choice without two or more options");
@@ -22,12 +25,19 @@ namespace PrometheusBot.Modules.Utility
         }
         [Command("Coin flip")]
         [Alias("Flip a coin")]
+        [Summary("Make the bot flip a coin.")]
         public async Task CoinFlip()
         {
             await Choose("Heads", "Tails");
         }
         [Command("Random")]
-        public async Task<RuntimeResult> Random(int minValue, int maxValue)
+        [Summary("Generate a random integer.")]
+        public async Task<RuntimeResult> Random(
+            [Summary("The inclusive minimum value for the ranodm number.")]
+            int minValue,
+            
+            [Summary("the exclusive maximum value for the random number.")]
+            int maxValue)
         {
             if (maxValue < minValue)
                 return CommandResult.FromError(CommandError.Unsuccessful, "The maximum value must be greater than the minimum value");

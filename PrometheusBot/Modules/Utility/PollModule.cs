@@ -24,7 +24,12 @@ namespace PrometheusBot.Modules.Utility
         }
 
         [Command("Poll")]
-        public async Task<RuntimeResult> Poll(string title, params string[] options)
+        public async Task<RuntimeResult> Poll(
+            [Summary("The poll's title.")]
+            string title,
+
+            [Summary("The options for the poll. Eleven at most.")]
+            params string[] options)
         {
             if (string.IsNullOrWhiteSpace(title))
                 return CommandResult.FromError(CommandError.Unsuccessful, "Title cannot be empty");

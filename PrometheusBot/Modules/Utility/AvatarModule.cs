@@ -10,9 +10,15 @@ namespace PrometheusBot.Modules.Utility
 {
     public class AvatarModule : ModuleBase<SocketCommandContext>
     {
+
+        private const string summary = "Gets an user's profile picture";
+
         [Command("Avatar")]
         [Alias("Profile", "pfp")]
-        public async Task Avatar([Remainder] IUser user)
+        [Summary(summary)]
+        public async Task Avatar(
+            [Summary("The name of the user.")]
+            [Remainder] IUser user)
         {
             string pfp = user.GetAvatarUrl(size:256);
             await ReplyAsync(pfp);
@@ -20,6 +26,7 @@ namespace PrometheusBot.Modules.Utility
 
         [Command("Avatar")]
         [Alias("Profile", "pfp")]
+        [Summary(summary)]
         public async Task Avatar()
         {
             var user = Context.Message.Author;

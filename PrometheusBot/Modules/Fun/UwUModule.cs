@@ -12,8 +12,11 @@ namespace PrometheusBot.Modules.Fun
     public class UwUModule : ModuleBase<SocketCommandContext>
     {
 
+        private const string summary = "Convert a message into UwU speeck.";
+
         [Command("UwU")]
         [Alias("OwO", "UwUtize", "OwOtize")]
+        [Summary(summary)]
         public async Task UwutizeAsync()
         {
             var message = await Context.Message.GetReplyingMessageAsync();
@@ -23,7 +26,10 @@ namespace PrometheusBot.Modules.Fun
 
         [Command("UwU")]
         [Alias("OwO", "UwUtize", "OwOtize")]
-        public async Task UwutizeAsync([Remainder] string text)
+        [Summary(summary)]
+        public async Task UwutizeAsync(
+            [Summary("The text to uwutize.")]
+            [Remainder] string text)
         {
             var embed = Context.Message.Author.Quote(UwUtize(text));
             await ReplyAsync(embed: embed.Build());

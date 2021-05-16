@@ -12,6 +12,7 @@ namespace PrometheusBot.Modules.Fun
     public class TellModule : ModuleBase<SocketCommandContext>
     {
         [Command("Tell")]
+        [Summary("Tell a user to go fuck themselves.")]
         public async Task Tell(SocketUser user, [Remainder] string sentence)
         {
             Regex regex = new("to go fuck (himself)|(herself)|(themselves)|(itself)");

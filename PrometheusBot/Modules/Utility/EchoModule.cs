@@ -13,7 +13,9 @@ namespace PrometheusBot.Modules.Utility
         [Command("Echo")]
         [Alias("Say")]
         [Summary("Send a message in chat")]
-        public Task Echo(string message)
+        public Task Echo(
+            [Summary("The text to say.")]
+            string message)
         {
             return ReplyAsync(message);
         }
