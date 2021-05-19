@@ -40,7 +40,7 @@
         ],
         "PermissionRole": true,
         "ValidationRegex": "(true)|(false)",
-        "RawErrorMessage": "`%s` is not a valid value. Value must be either `true` or `false`",
+        "RawErrorMessage": "`{0}` is not a valid value. Value must be either `true` or `false`",
         "Scope": "Guild",
         "Visible": true
     },
@@ -70,7 +70,7 @@
         ],
         "PermissionRole": true,
         "ValidationRegex": "(true)|(false)",
-        "RawErrorMessage": "`%s` is not a valid value. Value must be either `true` or `false`",
+        "RawErrorMessage": "`{0}` is not a valid value. Value must be either `true` or `false`",
         "Scope": "Both",
         "Visible": true
     },
@@ -85,8 +85,23 @@
         ],
         "PermissionRole": true,
         "ValidationRegex": "(true)|(false)",
-        "RawErrorMessage": "`%s` is not a valid value. Value must be either `true` or `false`",
+        "RawErrorMessage": "`{0}` is not a valid value. Value must be either `true` or `false`",
         "Scope": "Both",
+        "Visible": true
+    },
+    "random-quote:enabled": {
+        "Type": "System.Boolean",
+        "DefaultValue": "true",
+        "GuildPermissions": [
+            "Administrator"
+        ],
+        "ChannelPermissions": [
+
+        ],
+        "PermissionRole": true,
+        "ValidationRegex": "(true)|(false)",
+        "RawErrorMessage": "`{0}` is not a valid value. Value must be either `true` or `false`",
+        "Scope": "Guild",
         "Visible": true
     },
     "_secret-santa:last-sent": {

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using PrometheusBot.Extensions;
+using PrometheusBot.Services.Settings;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace PrometheusBot.Modules.Fun
 {
@@ -62,6 +64,13 @@ namespace PrometheusBot.Modules.Fun
         {
             if (string.IsNullOrWhiteSpace(context.Message.Content)) return false;
             if (context.Message.Content.Length > 255) return false;
+
+            var settings = services.GetService<SettingsService>();
+            SettingLookupInfo lookupInfo = new("random-quote:enabled") { CId = context.Channel.Id, GId = context.Guild.Id };
+            settings.GetSetting(lookupInfo, out bool enabled, true);
+
+            if (!enabled) return false;
+
             return _random.Next(0, 500) == 69;
         }
     }
