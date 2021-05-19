@@ -100,6 +100,7 @@ namespace PrometheusBot
             SettingsService settings)
         {
             ReactionsService reactions = new(settings);
+            Random random = new();
 
             var services = new ServiceCollection()
                 .AddSingleton(client)
@@ -108,7 +109,8 @@ namespace PrometheusBot
                 .AddSingleton(localSettings)
                 .AddSingleton(messageHistory)
                 .AddSingleton(settings)
-                .AddSingleton(reactions);
+                .AddSingleton(reactions)
+                .AddSingleton(random);
 
             return services.BuildServiceProvider();
         }

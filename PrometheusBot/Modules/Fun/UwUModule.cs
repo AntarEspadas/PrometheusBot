@@ -51,7 +51,6 @@ namespace PrometheusBot.Modules.Fun
             regex = new Regex("(?<=[pt])o");
             text = regex.Replace(text, "wo");
             regex = new Regex("!+");
-            var random = new Random();
             text = regex.Replace(text, $" {faces.RandomElement()} ");
             return text;
         }

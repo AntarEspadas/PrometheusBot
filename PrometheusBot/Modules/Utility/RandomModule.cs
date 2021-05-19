@@ -10,7 +10,13 @@ namespace PrometheusBot.Modules.Utility
 {
     public class RandomModule : ModuleBase<SocketCommandContext>
     {
-        private static readonly Random _random = new();
+        private readonly Random _random;
+
+        public RandomModule(Random random)
+        {
+            _random = random;
+        }
+
         [Command("Choose")]
         [Summary("Make the bot pick a random item from a list of options.")]
         public async Task<RuntimeResult> Choose(

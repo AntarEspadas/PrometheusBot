@@ -17,8 +17,13 @@ namespace PrometheusBot.Modules.Fun.Danbooru
         private static readonly HttpClient _httpClient = new();
         private const string POSTS_API = "https://danbooru.donmai.us/post/index.json";
         private const string POSTS_COUNTS_API = "https://danbooru.donmai.us/counts/posts.json";
-        private static readonly Random _random = new();
+        private readonly Random _random;
         private static readonly TextInfo _textInfo = new CultureInfo("en-US").TextInfo;
+
+        public DanbooruModule(Random random)
+        {
+            _random = random;
+        }
 
         [Command("Feet")]
         [Summary("Get a random feet image from danbooru.")]
@@ -65,7 +70,7 @@ namespace PrometheusBot.Modules.Fun.Danbooru
             return CommandResult.FromSuccess();
         }
 
-        private static async Task<Post> RandomPost(IList<string> tags = null)
+        private async Task<Post> RandomPost(IList<string> tags = null)
         {
             tags ??= Array.Empty<string>();
             string formattedTags = string.Join("%20", tags);

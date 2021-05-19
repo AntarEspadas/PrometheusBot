@@ -15,6 +15,12 @@ namespace PrometheusBot.Modules.Fun
     {
 
         private const string summary = "Turns text into a fake quote by a famous person.";
+        private readonly Random _random;
+
+        public FakeQuoteModule(Random random)
+        {
+            _random = random;
+        }
 
         [Priority(-100)]
         [RandomFakeQuoteCommand]
@@ -46,7 +52,7 @@ namespace PrometheusBot.Modules.Fun
                 {"God", "https://upload.wikimedia.org/wikipedia/commons/1/13/Michelangelo%2C_Creation_of_Adam_06.jpg" },
                 {"Confucius","https://upload.wikimedia.org/wikipedia/commons/9/9a/Confucius_the_scholar.jpg" }
             };
-            var index = new Random().Next(0, people.GetLength(0));
+            var index = _random.Next(0, people.GetLength(0));
             var eb = new EmbedBuilder()
             {
                 Title = text,
@@ -59,7 +65,6 @@ namespace PrometheusBot.Modules.Fun
 
     class RandomFakeQuoteCommandAttribute : NonStandardCommandAttribute
     {
-        private static readonly Random _random = new();
         public override bool Validate(ICommandContext context, IServiceProvider services)
         {
             if (string.IsNullOrWhiteSpace(context.Message.Content)) return false;
@@ -71,6 +76,7 @@ namespace PrometheusBot.Modules.Fun
 
             if (!enabled) return false;
 
+            var _random = services.GetService<Random>();
             return _random.Next(0, 500) == 69;
         }
     }
