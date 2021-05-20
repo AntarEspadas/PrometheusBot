@@ -54,10 +54,14 @@ namespace PrometheusBot.Modules.Config
                 await ReplyAsync($"Unknown value `{scope}`, must be one of `user` or `server`");
                 return;
             }
-            SettingModel settingModel = _settings.GetSettingInfo(setting);
-            if (settingModel is null || !settingModel.Visible)
+            SettingModel settingModel;
+            try
             {
-                await base.ReplyAsync($"Unknown setting `{setting}`");
+                settingModel = _settings.GetSettingInfo(setting);
+            }
+            catch (SettingNotFoundException)
+            {
+                await ReplyAsync($"Unknown setting `{setting}`");
                 return;
             }
             if (scope == "user" && settingModel.Scope == SettingScope.Guild)
