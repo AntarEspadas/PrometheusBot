@@ -27,7 +27,7 @@ namespace PrometheusBot.Services.Settings
 
 
             Type = type;
-            DefaultValue = converter.ConvertFromString(defaultValue);
+            DefaultValue = converter.ConvertFromInvariantString(defaultValue);
             GuildPermissions = guildPermissions.ToImmutableList();
             ChannelPermissions = channelPermissions.ToImmutableList();
             PermissionRole = permissionRole;
@@ -49,12 +49,12 @@ namespace PrometheusBot.Services.Settings
 
         public object Convert(string value)
         {
-            object convertedValue = converter.ConvertFromString(value);
+            object convertedValue = converter.ConvertFromInvariantString(value);
             return convertedValue ?? throw new NotSupportedException();
         }
         public string Convert(object value)
         {
-            string convertedValue = converter.ConvertToString(value);
+            string convertedValue = converter.ConvertToInvariantString(value);
             return convertedValue;
         }
     }
