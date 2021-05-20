@@ -76,8 +76,11 @@ namespace PrometheusBot.Modules.Fun
 
             if (!enabled) return false;
 
-            var _random = services.GetService<Random>();
-            return _random.Next(0, 500) == 69;
+            lookupInfo.SettingName = "random-quote:probability";
+            settings.GetSetting(lookupInfo, out double probability, true);
+            var random = services.GetService<Random>();
+
+            return random.NextDouble() < probability;
         }
     }
 }

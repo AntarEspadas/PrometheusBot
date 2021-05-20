@@ -104,6 +104,21 @@
         "Scope": "Guild",
         "Visible": true
     },
+    "random-quote:probability": {
+        "Type": "System.Double",
+        "DefaultValue": "0.002",
+        "GuildPermissions": [
+            "Administrator"
+        ],
+        "ChannelPermissions": [
+
+        ],
+        "PermissionRole": true,
+        "ValidationRegex": "(0|1|(0\\.\\d{1,5}0*))",
+        "RawErrorMessage": "`{0}` is not a valid value. Value must be a decimal number between 0 and 1, both inclusive, with at most 5 decimals",
+        "Scope": "Guild",
+        "Visible": true
+    },
     "_secret-santa:last-sent": {
         "Type": "System.DateTime",
         "DefaultValue": "",
