@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Newtonsoft.Json;
+using PrometheusBot.Commands.Preconditions;
 using PrometheusBot.Extensions;
 
 namespace PrometheusBot.Modules.Fun.Danbooru
@@ -28,10 +29,14 @@ namespace PrometheusBot.Modules.Fun.Danbooru
         [Command("Feet")]
         [Summary("Get a random feet image from danbooru.")]
         [RequireNsfw]
+        [BannedUser(544290984054226964, Message = "Te la pelaste Martín")]
         public async Task<RuntimeResult> Feet(
             [Summary("The character to search feet for")]
             string character = null)
         {
+            if (Context.User.Id == 544290984054226964)
+                return CommandResult.FromError(CommandError.Unsuccessful, "Martín me la pela");
+
             List<string> tags = new() { "feet", "rating:safe" };
 
             if (character is not null)
@@ -51,6 +56,7 @@ namespace PrometheusBot.Modules.Fun.Danbooru
         [Command("Danbooru")]
         [Summary("Gets a random image from Danbooru.")]
         [RequireNsfw]
+        [BannedUser(544290984054226964, Message = "Te la pelaste Martín")]
         public async Task<RuntimeResult> RandomDanbooru(
             [Summary("Danbooru tags for the image")]
             params string[] tags)
