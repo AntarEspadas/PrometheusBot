@@ -10,6 +10,7 @@ using PrometheusBot.Model;
 using PrometheusBot.Modules.Info;
 using PrometheusBot.Modules.Misc;
 using PrometheusBot.Services;
+using PrometheusBot.Services.Audio;
 using PrometheusBot.Services.MessageHistory;
 using PrometheusBot.Services.NonStandardCommands;
 using PrometheusBot.Services.Settings;
@@ -100,6 +101,7 @@ namespace PrometheusBot
             SettingsService settings)
         {
             ReactionsService reactions = new(settings);
+            AudioService audioService = new();
             Random random = new();
 
             var services = new ServiceCollection()
@@ -110,7 +112,8 @@ namespace PrometheusBot
                 .AddSingleton(messageHistory)
                 .AddSingleton(settings)
                 .AddSingleton(reactions)
-                .AddSingleton(random);
+                .AddSingleton(random)
+                .AddSingleton(audioService);
 
             return services.BuildServiceProvider();
         }
