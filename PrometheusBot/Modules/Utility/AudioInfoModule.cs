@@ -24,6 +24,7 @@ namespace PrometheusBot.Modules.Utility
             _audioService = audioService;
         }
 
+        [RequireOwner]
         [Command("Listen")]
         public async Task Listen(string url)
         {
@@ -41,6 +42,7 @@ namespace PrometheusBot.Modules.Utility
             httpClient.GetAsync(_url + "?user=" + e.Speaker);
         }
 
+        [RequireOwner]
         [Command("Disconnect")]
         public async Task Disconnect()
         {
