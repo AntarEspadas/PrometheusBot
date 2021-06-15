@@ -8,12 +8,14 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PrometheusBot.Modules.Utility
 {
     public class AudioInfoModule : ModuleBase<SocketCommandContext>
     {
+        private static readonly string audioPath = System.IO.Path.Combine(Program.Directory, "assets", "audio", "connection-audio.mp3");
 
         private readonly AudioService _audioService;
         private string _url;
@@ -32,7 +34,7 @@ namespace PrometheusBot.Modules.Utility
 
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             var connection = await _audioService.JoinAsync(voiceChannel);
-            await connection.PlayAsync(@"awawawawawawawa.m4a");
+            await connection.PlayAsync(audioPath);
             connection.UpdateSpeaker = true;
             connection.SpeakerChanged += OnSpeakerChanged;
         }
