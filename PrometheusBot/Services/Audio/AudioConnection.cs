@@ -88,8 +88,6 @@ namespace PrometheusBot.Services.Audio
             int lastFrameCount = _frames[userId];
             int availableFrames = stream.AvailableFrames;
             if (availableFrames == 0 || availableFrames < lastFrameCount) return;
-            //Console.WriteLine(userId + $": {availableFrames}, {lastFrameCount}");
-            Console.WriteLine(userId + " is speaking");
             _frames[userId] = availableFrames;
             _lastSpoken[userId] = DateTime.Now;
             stream.TryReadFrame(default, out _);
