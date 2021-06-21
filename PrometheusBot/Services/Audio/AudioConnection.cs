@@ -117,7 +117,11 @@ namespace PrometheusBot.Services.Audio
                 int points = item.Value.Sum();
                 if (points < 3) continue;
                 if (points == maxPoints) return 0;
-                if (points > maxPoints) maxPoints = points;
+                if (points > maxPoints)
+                {
+                    maxPoints = points;
+                    result = item.Key;
+                }
             }
             return result;
         }
