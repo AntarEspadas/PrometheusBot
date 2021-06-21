@@ -17,7 +17,7 @@ namespace PrometheusBot.Services.Audio
 
         private readonly Timer _timer;
         private readonly Dictionary<ulong, int> _frames = new();
-        private readonly Dictionary<ulong, DateTime> _lastSpoken = new();
+        private readonly Dictionary<ulong, Queue<int>> _speakPoints = new();
 
         public bool UpdateSpeaker { get => _updateSpeaker; set => _updateSpeaker = _timer.Enabled = value; }
         private bool _updateSpeaker;
@@ -71,7 +71,7 @@ namespace PrometheusBot.Services.Audio
             var streams = AudioClient.GetStreams();
             foreach (var item in streams)
             {
-                UpdateLastSpoken(item.Key, item.Value);
+                UpdateSpokenShare(item.Key, item.Value);
             }
 
             ulong speakingUser = GetSpeakingUser();
@@ -81,37 +81,45 @@ namespace PrometheusBot.Services.Audio
                 SpeakerChanged?.Invoke(this, new SpeakerChangedArgs(speakingUser));
             }
         }
-        private void UpdateLastSpoken(ulong userId, AudioInStream stream)
+        private void UpdateSpokenShare(ulong userId, AudioInStream stream)
         {
             if (!_frames.ContainsKey(userId))
                 _frames[userId] = 0;
             int lastFrameCount = _frames[userId];
             int availableFrames = stream.AvailableFrames;
-            if (availableFrames == 0 || availableFrames < lastFrameCount) return;
+
+            if (!_speakPoints.ContainsKey(userId))
+                _speakPoints[userId] = new(new int[10]);
+            var userSpeakPoints = _speakPoints[userId];
+            userSpeakPoints.Dequeue();
+
+            if (availableFrames == 0 || availableFrames < lastFrameCount)
+            {
+                userSpeakPoints.Enqueue(0);
+                return;
+            }
+
+            //If this part is reched, then the user spoke within the last half second
             _frames[userId] = availableFrames;
-            _lastSpoken[userId] = DateTime.Now;
+            userSpeakPoints.Enqueue(1);
             stream.TryReadFrame(default, out _);
         }
 
         private ulong GetSpeakingUser()
         {
-            //Return the id of a user that has spoken within the last second, only if no other user has spoken within the las few seconds
-
-            ulong speakingUser = default;
-            foreach (var item in _lastSpoken)
+            //Find the user who spoke the most within the last 5 seconds, so long as they spoke for at least 1.5 seconds
+            //That is, the user with the most points, and with at least 3 pionts
+            //If multiple users spoke the most or no one spoke for more than 1.5 seconds, no user is returned
+            int maxPoints = 0;
+            ulong result = 0;
+            foreach (var item in _speakPoints)
             {
-                var timeSinceSpoken = DateTime.Now - item.Value;
-                if (timeSinceSpoken > TimeSpan.FromSeconds(3)) continue;
-                if (timeSinceSpoken < TimeSpan.FromSeconds(1))
-                {
-                    if (speakingUser != default) return default;
-                    speakingUser = item.Key;
-                    continue;
-                }
-                //User hasn't spoken within the last second, but spoke recently, meaning no user can be valid
-                return default;
+                int points = item.Value.Sum();
+                if (points < 3) continue;
+                if (points == maxPoints) return 0;
+                if (points > maxPoints) maxPoints = points;
             }
-            return speakingUser;
+            return result;
         }
     }
 }
