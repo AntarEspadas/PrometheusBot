@@ -6,14 +6,13 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using PrometheusBot.Commands;
-using PrometheusBot.Model;
-using PrometheusBot.Modules.Info;
-using PrometheusBot.Modules.Misc;
 using PrometheusBot.Services;
 using PrometheusBot.Services.Audio;
 using PrometheusBot.Services.MessageHistory;
+using PrometheusBot.Services.Music;
 using PrometheusBot.Services.NonStandardCommands;
 using PrometheusBot.Services.Settings;
+using Victoria;
 
 namespace PrometheusBot
 {
@@ -40,7 +39,6 @@ namespace PrometheusBot
             client.MessageDeleted += messageHistory.AddDeletedAsync;
 
             await client.LoginAsync(TokenType.Bot, localSettings.DiscordToken);
-            await client.StartAsync();
 
 
             CommandServiceConfig commandsConfig = new()
@@ -56,6 +54,18 @@ namespace PrometheusBot
             CommandHandler commandHandler = new(services);
             await commandHandler.InstallCommandsAsync();
 
+            async Task OnReady()
+            {
+                var lavaNode = services.GetService<LavaNode>();
+                if (!lavaNode.IsConnected)
+                {
+                    await lavaNode.ConnectAsync();
+                }
+            }
+
+            client.Ready += OnReady;
+            await client.StartAsync();
+
             try
             {
                 await Task.Delay(-1);
@@ -65,7 +75,7 @@ namespace PrometheusBot
                 await client.LogoutAsync();
             }
         }
-        
+
         public static Task Log(LogMessage message)
         {
             Console.WriteLine(message);
@@ -77,7 +87,11 @@ namespace PrometheusBot
             string path = Path.Join(Directory, "LocalSettings.json");
             LocalSettingsService settings = new(path);
             settings.Load();
-            if (!string.IsNullOrWhiteSpace(settings.DiscordToken)) return settings;
+            if (!string.IsNullOrWhiteSpace(settings.DiscordToken))
+            {
+                settings.Save();
+                return settings;
+            }
 
             //Token was not found, presumably first time running program. Prompt user for token
             do
@@ -113,7 +127,14 @@ namespace PrometheusBot
                 .AddSingleton(settings)
                 .AddSingleton(reactions)
                 .AddSingleton(random)
-                .AddSingleton(audioService);
+                .AddSingleton(audioService)
+                .AddSingleton<MusicService>()
+                .AddLavaNode(x =>
+               {
+                   x.Hostname = "localhost";
+                   x.Port = 2333;
+                   x.Authorization = "youshallnotpass";
+               });
 
             return services.BuildServiceProvider();
         }

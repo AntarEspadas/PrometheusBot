@@ -13,6 +13,9 @@ namespace PrometheusBot.Services
         public string ConnectionString { get; set; } = "Server=localhost;Port=3306;database=PrometheusDB;user id=PrometheusBot;password=PrometheusBot";
         public string CatApiKey { get; set; }
         public string DogApiKey { get; set; }
+        public string LavaLinkHost { get; set; } = "localhost";
+        public int LavaLinkPort { get; set; } = 2333;
+        public string LavaLinkPassword { get; set; } = "youshallnotpass";
 
         public LocalSettingsService(string path)
         {
