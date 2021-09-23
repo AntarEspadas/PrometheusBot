@@ -85,6 +85,7 @@ namespace PrometheusBot
                 .AddSingleton<Random>()
                 .AddSingleton<MusicService>()
                 .AddSingleton<ReactionsService>()
+                .AddSingleton<WelcomeService>()
                 .AddLavaNode(x =>
                 {
                     x.Hostname = "localhost";
