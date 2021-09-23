@@ -10,6 +10,7 @@ using Discord.WebSocket;
 using PrometheusBot.Model;
 using PrometheusBot.Services.NonStandardCommands;
 using PrometheusBot.Services.Settings;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace PrometheusBot.Commands
 {
@@ -19,14 +20,16 @@ namespace PrometheusBot.Commands
         private readonly CommandService _commands;
         private readonly NonStandardCommandService _nonStandardCommands;
         private readonly SettingsService _settings;
+        private readonly PrometheusBot _bot;
         private readonly IServiceProvider _services;
 
         public CommandHandler(IServiceProvider services)
         {
-            _client = (DiscordSocketClient)services.GetService(typeof(DiscordSocketClient));
-            _commands = (CommandService)services.GetService(typeof(CommandService));
-            _nonStandardCommands = (NonStandardCommandService)services.GetService(typeof(NonStandardCommandService));
-            _settings = (SettingsService)services.GetService(typeof(SettingsService));
+            _client = services.GetService<DiscordSocketClient>();
+            _commands = services.GetService<CommandService>();
+            _nonStandardCommands = services.GetService<NonStandardCommandService>();
+            _settings = services.GetService<SettingsService>();
+            _bot = services.GetService<PrometheusBot>();
             _services = services;
         }
         public async Task InstallCommandsAsync()
@@ -95,12 +98,12 @@ namespace PrometheusBot.Commands
         }
         private void LogCommandExecution(string source, string commandName)
         {
-            Program.Log(new LogMessage(LogSeverity.Info, source, $"{commandName} executed succesfully."));
+            _bot.Log(new LogMessage(LogSeverity.Info, source, $"{commandName} executed succesfully."));
         }
 
         private void LogCommandError(string source, string commandName, IResult result)
         {
-            Program.Log(new LogMessage(LogSeverity.Error, source, $"{commandName} caused an error: {result.Error}. Reason: {result.ErrorReason}"));
+            _bot.Log(new LogMessage(LogSeverity.Error, source, $"{commandName} caused an error: {result.Error}. Reason: {result.ErrorReason}"));
         }
     }
 }

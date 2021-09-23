@@ -12,9 +12,12 @@ namespace PrometheusBot.Services.MessageHistory
         public Dictionary<ulong, Dictionary<ulong, Dictionary<ulong, MessageHistoryList>>> Guilds { get; private set; }
         public MessageHistoryList this[ulong guildId, ulong channelId, ulong messageId] { get => GetHistory(guildId, channelId, messageId); }
 
-        public MessageHistoryService()
+        public MessageHistoryService(DiscordSocketClient client)
         {
-            Guilds = new Dictionary<ulong, Dictionary<ulong, Dictionary<ulong, MessageHistoryList>>>();
+            Guilds = new();
+
+            client.MessageUpdated += AddAsync;
+            client.MessageDeleted += AddDeletedAsync;
         }
 
         public void Add(IMessage message)
