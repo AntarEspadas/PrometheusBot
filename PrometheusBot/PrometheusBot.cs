@@ -20,6 +20,8 @@ namespace PrometheusBot
 {
     public class PrometheusBot
     {
+        public DiscordSocketClient Client { get => _client; }
+
         DiscordSocketClient _client;
         LocalSettingsService _localSettings;
         CommandHandler _commandHandler;
@@ -138,6 +140,11 @@ namespace PrometheusBot
                 Console.WriteLine("Failed to write new settings. You will be promted for a token again next time the program runs");
             }
             return settings;
+        }
+
+        public IReadOnlyCollection<SocketGuild> GetGuilds()
+        {
+            return _client.Guilds;
         }
     }
 }

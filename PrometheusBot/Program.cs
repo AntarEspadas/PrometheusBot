@@ -1,19 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
-using Discord;
-using Discord.Commands;
-using Discord.WebSocket;
-using Microsoft.Extensions.DependencyInjection;
-using PrometheusBot.Commands;
-using PrometheusBot.Services;
-using PrometheusBot.Services.Audio;
-using PrometheusBot.Services.MessageHistory;
-using PrometheusBot.Services.Music;
-using PrometheusBot.Services.NonStandardCommands;
-using PrometheusBot.Services.Settings;
-using Victoria;
-
 namespace PrometheusBot
 {
     class Program
@@ -21,11 +9,16 @@ namespace PrometheusBot
         public static string Directory { get; } = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         static async Task Main(string[] args)
         {
+            ManualResetEvent resetEvent = new(false);
             PrometheusBot prometheusBot = new();
+            prometheusBot.Client.Ready += async () => resetEvent.Set();
+            InteractiveConsole.InteractiveConsole console = new(prometheusBot);
             await prometheusBot.StartAsync();
             try
             {
-                await Task.Delay(-1);
+                resetEvent.WaitOne();
+                await Task.Delay(1000);
+                console.Run();
             }
             finally
             {
