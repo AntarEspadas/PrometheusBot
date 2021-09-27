@@ -141,10 +141,5 @@ namespace PrometheusBot
             }
             return settings;
         }
-
-        public IReadOnlyCollection<SocketGuild> GetGuilds()
-        {
-            return _client.Guilds;
-        }
     }
 }
