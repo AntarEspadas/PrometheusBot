@@ -45,7 +45,7 @@ namespace PrometheusBot.Modules.Utility
         }
 
         [RequireOwner]
-        [Command("Disconnect")]
+        [Command("Listen stop")]
         public async Task Disconnect()
         {
             await _audioService.DisconnectAsync(Context.Guild.Id);
