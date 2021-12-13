@@ -75,5 +75,20 @@ namespace PrometheusBot.Modules.Music
         {
             return await _musicService.ShuffleAsync(Context);
         }
+
+        [Command("Loop")]
+        [Alias("Loop track")]
+        [Summary("Plays the current track on a loop")]
+        public async Task<RuntimeResult> LoopTrack()
+        {
+            return await _musicService.ToggleTrackLoopAsync(Context);
+        }
+
+        [Command("Loop playlist")]
+        [Summary("Plays the current playlist on a loop")]
+        public async Task<RuntimeResult> LoopPlaylist()
+        {
+            return await _musicService.TogglePlaylistLoopAsync(Context);
+        }
     }
 }

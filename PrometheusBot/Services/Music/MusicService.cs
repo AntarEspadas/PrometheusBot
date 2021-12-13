@@ -16,6 +16,7 @@ namespace PrometheusBot.Services.Music
     public class MusicService
     {
         private LavaNode _lavaNode;
+        private readonly Dictionary<LavaPlayer, PlayerInfo> _info = new();
 
         public MusicService(LavaNode lavaNode)
         {
@@ -23,12 +24,31 @@ namespace PrometheusBot.Services.Music
             _lavaNode.OnTrackEnded += OnTrackEndedAsync;
         }
 
-        public static async Task OnTrackEndedAsync(TrackEndedEventArgs args)
+        public async Task OnTrackEndedAsync(TrackEndedEventArgs args)
         {
             var player = args.Player;
-            if (player.Queue is null) return;
-            var hasNext = player.Queue.TryDequeue(out var nextTrack);
-            if (!hasNext) return;
+            var queue = player.Queue;
+            if (queue is null) return;
+
+            LavaTrack nextTrack;
+
+            switch (_info[player].LoopMode)
+            {
+                case LoopMode.None:
+                    queue.TryDequeue(out nextTrack);
+                    break;
+                case LoopMode.Track:
+                    nextTrack = args.Track;
+                    break;
+                case LoopMode.Playlist:
+                    if (queue.TryDequeue(out nextTrack))
+                        queue.Enqueue(nextTrack);
+                    break;
+                default:
+                    nextTrack = null;
+                    break;
+            }
+            if (nextTrack is null) return;
             await player.PlayAsync(nextTrack);
         }
 
@@ -41,7 +61,8 @@ namespace PrometheusBot.Services.Music
             if (voiceState?.VoiceChannel is null)
                 return CommandResult.FromError(CommandError.Unsuccessful, "You must be connected to a voice channel");
 
-            await _lavaNode.JoinAsync(voiceState.VoiceChannel, context.Channel as ITextChannel);
+            var player = await _lavaNode.JoinAsync(voiceState.VoiceChannel, context.Channel as ITextChannel);
+            _info[player] = new();
             await context.Channel.SendMessageAsync($"Joined {voiceState.VoiceChannel.Name}");
             return CommandResult.FromSuccess();
         }
@@ -120,6 +141,9 @@ namespace PrometheusBot.Services.Music
             if (track is null)
                 return CommandResult.FromError(CommandError.Unsuccessful, "Nothing to skip");
 
+            var info = _info[player];
+            if (info.LoopMode == LoopMode.Track)
+                info.LoopMode = LoopMode.None;
             await player.StopAsync();
             await context.Channel.SendMessageAsync($"Skipped `{track.Title}`");
             return CommandResult.FromSuccess();
@@ -171,6 +195,41 @@ namespace PrometheusBot.Services.Music
             }
             _ = context.Channel.SendMessageAsync($"Now playing `{track.Title}`");
             await player.PlayAsync(track);
+        }
+
+        public async Task<CommandResult> ToggleTrackLoopAsync(SocketCommandContext context)
+        {
+            if (!_lavaNode.TryGetPlayer(context.Guild, out var player))
+                return CommandResult.FromError(CommandError.Unsuccessful, "Bot not currently in any voice channel");
+            if (player.Track is null)
+                return CommandResult.FromError(CommandError.Unsuccessful, "No track playing");
+            var playerInfo = _info[player];
+            if (playerInfo.LoopMode != LoopMode.Track)
+            {
+                playerInfo.LoopMode = LoopMode.Track;
+                await context.Channel.SendMessageAsync($"Now looping `{player.Track.Title}`");
+                return CommandResult.FromSuccess();
+            }
+
+            _info[player].LoopMode = LoopMode.None;
+            await context.Channel.SendMessageAsync("Stopped looping track");
+            return CommandResult.FromSuccess();
+        }
+
+        public async Task<CommandResult> TogglePlaylistLoopAsync(SocketCommandContext context)
+        {
+            if (!_lavaNode.TryGetPlayer(context.Guild, out var player))
+                return CommandResult.FromError(CommandError.Unsuccessful, "Bot not currently in any voice channel");
+            var playerInfo = _info[player];
+            if (playerInfo.LoopMode != LoopMode.Playlist)
+            {
+                playerInfo.LoopMode = LoopMode.Playlist;
+                await context.Channel.SendMessageAsync("Now loping playlist");
+                return CommandResult.FromSuccess();
+            }
+            playerInfo.LoopMode = LoopMode.None;
+            await context.Channel.SendMessageAsync("Stopped looping playlist");
+            return CommandResult.FromSuccess();
         }
     }
 }
