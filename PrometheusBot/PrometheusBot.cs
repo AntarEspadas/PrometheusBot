@@ -90,9 +90,9 @@ namespace PrometheusBot
                 .AddSingleton<WelcomeService>()
                 .AddLavaNode(x =>
                 {
-                    x.Hostname = "localhost";
-                    x.Port = 2333;
-                    x.Authorization = "youshallnotpass";
+                    x.Hostname = localSettings.LavaLinkHost;
+                    x.Port = (ushort)localSettings.LavaLinkPort;
+                    x.Authorization = localSettings.LavaLinkPassword;
                 });
 
             return services.BuildServiceProvider();
