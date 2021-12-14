@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord.Commands;
-using System.Net;
 using Newtonsoft.Json;
 using Discord;
 using PrometheusBot.Services;
+using System.Net.Http;
 
 namespace PrometheusBot.Modules.Fun.RandomAnimals
 {
@@ -88,11 +88,11 @@ namespace PrometheusBot.Modules.Fun.RandomAnimals
 
         private async Task<string> GetImageUrlAsync(string api, string mimeTypes, string apiKey = null)
         {
-            WebClient client = new();
+            HttpClient client = new();
             if (apiKey is not null)
-                client.Headers["x-api-key"] = apiKey;
+                client.DefaultRequestHeaders.Add("x-api-key", apiKey);
             string apiRequest = $"/v1/images/search?mime_types={mimeTypes}";
-            string stringResponse = await client.DownloadStringTaskAsync(api + apiRequest);
+            string stringResponse = await client.GetStringAsync(api + apiRequest);
             var response = JsonConvert.DeserializeObject<ApiResponse[]>(stringResponse)[0];
             return response.Url;
         }
