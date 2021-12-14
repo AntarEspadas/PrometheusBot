@@ -41,8 +41,8 @@ namespace PrometheusBot.Services.Music
                     nextTrack = args.Track;
                     break;
                 case LoopMode.Playlist:
-                    if (queue.TryDequeue(out nextTrack))
-                        queue.Enqueue(nextTrack);
+                    queue.Enqueue(args.Track);
+                    queue.TryDequeue(out nextTrack);
                     break;
                 default:
                     nextTrack = null;
