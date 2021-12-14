@@ -50,6 +50,7 @@ namespace PrometheusBot.Services.Music
             }
             if (nextTrack is null) return;
             await player.PlayAsync(nextTrack);
+            await player.SeekAsync(TimeSpan.FromSeconds(0));
         }
 
         public async Task<CommandResult> JoinAsync(SocketCommandContext context)
