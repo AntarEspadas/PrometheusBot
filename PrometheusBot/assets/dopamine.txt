@@ -1,0 +1,2 @@
+#Random responses to the 'dopamine' command, one per line.
+#Lines starting with '#' are ignored.
