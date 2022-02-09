@@ -1,10 +1,12 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using PrometheusBot.Modules;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Victoria;
 using Victoria.Enums;
@@ -29,10 +31,11 @@ namespace PrometheusBot.Services.Music
             var player = args.Player;
             var queue = player.Queue;
             if (queue is null) return;
+            var playerInfo = _info[player];
 
             LavaTrack nextTrack;
 
-            switch (_info[player].LoopMode)
+            switch (playerInfo.LoopMode)
             {
                 case LoopMode.None:
                     queue.TryDequeue(out nextTrack);
@@ -48,9 +51,20 @@ namespace PrometheusBot.Services.Music
                     nextTrack = null;
                     break;
             }
-            if (nextTrack is null) return;
+            if (nextTrack is null)
+            {
+                playerInfo.QueueEndedCancellationTokenSource = new();
+                _ = DisconnectAfterAsync(TimeSpan.FromSeconds(60), player.TextChannel.Guild, player.TextChannel, playerInfo.QueueEndedCancellationTokenSource.Token);
+                return;
+            };
             await player.PlayAsync(nextTrack);
             await player.SeekAsync(TimeSpan.FromSeconds(0));
+        }
+
+        private async Task DisconnectAfterAsync(TimeSpan delay, IGuild guild, ITextChannel channel, CancellationToken cancellationToken)
+        {
+            await Task.Delay(delay, cancellationToken);
+            await DisconnectAsync(guild, channel);
         }
 
         public async Task<CommandResult> JoinAsync(SocketCommandContext context)
@@ -74,6 +88,8 @@ namespace PrometheusBot.Services.Music
                 await JoinAsync(context);
 
             var player = _lavaNode.GetPlayer(context.Guild);
+
+            _info[player].QueueEndedCancellationTokenSource?.Cancel();
 
             var type = Uri.IsWellFormedUriString(query, UriKind.Absolute) ? SearchType.Direct : SearchType.YouTube;
             var reply = context.Channel.SendMessageAsync($"Searching for `{query}...`");
@@ -163,12 +179,19 @@ namespace PrometheusBot.Services.Music
 
         public async Task<CommandResult> DisconnectAsync(SocketCommandContext context)
         {
-            bool hasPlayer = _lavaNode.TryGetPlayer(context.Guild, out var player);
+            return await DisconnectAsync(context.Guild, (ITextChannel)context.Channel);
+        }
+
+        private async Task<CommandResult> DisconnectAsync(IGuild guild, ITextChannel channel)
+        {
+            bool hasPlayer = _lavaNode.TryGetPlayer(guild, out var player);
             if (!hasPlayer)
                 return CommandResult.FromError(CommandError.Unsuccessful, "Bot not currently in any voice channel");
 
+            _info[player].QueueEndedCancellationTokenSource?.Cancel();
+            _info.Remove(player);
             await _lavaNode.LeaveAsync(player.VoiceChannel);
-            await context.Channel.SendMessageAsync("Left the voice channel");
+            await channel.SendMessageAsync("Left the voice channel");
             return CommandResult.FromSuccess();
         }
 
