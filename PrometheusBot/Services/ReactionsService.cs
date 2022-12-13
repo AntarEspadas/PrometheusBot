@@ -9,7 +9,7 @@ using PrometheusBot.Services.Settings;
 
 namespace PrometheusBot.Services
 {
-    public class ReactionsService
+    class ReactionsService
     {
         private DataAccess _data;
         public ReactionsService(SettingsService settings)

@@ -59,13 +59,13 @@ namespace PrometheusBot.Forms
             return Result;
         }
 
-        private Task ReactionAdded(Cacheable<IUserMessage, ulong> cacheable, ISocketMessageChannel channel, SocketReaction reaction)
+        private Task ReactionAdded(Cacheable<IUserMessage, ulong> cacheable, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
         {
             HandleReaction(reaction, true);
             return Task.CompletedTask;
         }
 
-        private Task ReactionRemoved(Cacheable<IUserMessage, ulong> cacheable, ISocketMessageChannel channel, SocketReaction reaction)
+        private Task ReactionRemoved(Cacheable<IUserMessage, ulong> cacheable, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
         {
             HandleReaction(reaction, false);
             return Task.CompletedTask;

@@ -10,7 +10,7 @@ using PrometheusBot.Services.Settings;
 
 namespace PrometheusBot.Modules.Info
 {
-    public class MentionModule : ModuleBase<SocketCommandContext>
+    class MentionModule : ModuleBase<SocketCommandContext>
     {
         private readonly SettingsService _settings;
 

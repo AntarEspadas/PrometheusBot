@@ -12,7 +12,7 @@ using PrometheusBot.Services;
 
 namespace PrometheusBot.Modules.Misc
 {
-    public class ReactionsModule : ModuleBase<SocketCommandContext>
+    class ReactionsModule : ModuleBase<SocketCommandContext>
     {
         internal static readonly Dictionary<ICommandContext, Tuple<IList<ReactionMatch>, bool>> pendingMatches = new();
 

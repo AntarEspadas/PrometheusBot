@@ -61,7 +61,8 @@ namespace PrometheusBot.Commands
             ulong UserId = context.User.Id;
             ulong? GuildId = context.Guild?.Id;
             ulong ChannelId = context.Channel.Id;
-            string[] prefixes = _settings.GetPrefixes(UserId, GuildId, ChannelId);
+            // string[] prefixes = _settings.GetPrefixes(UserId, GuildId, ChannelId);
+            string[] prefixes = new[] { "navi", "n." };
             string naturalPrefix = prefixes[0];
             string syntheticPrefix = prefixes[1];
 

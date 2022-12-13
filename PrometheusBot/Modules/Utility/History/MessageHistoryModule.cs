@@ -11,7 +11,7 @@ using PrometheusBot.Services.Settings;
 
 namespace PrometheusBot.Modules.Utility.History
 {
-    public class MessageHistoryModule : ModuleBase<SocketCommandContext>
+    class MessageHistoryModule : ModuleBase<SocketCommandContext>
     {
         private readonly MessageHistoryService _messageHistory;
         private readonly SettingsService _settings;

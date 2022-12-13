@@ -10,7 +10,7 @@ using PrometheusBot.Services.Settings;
 
 namespace PrometheusBot.Modules.Config
 {
-    public class ConfigModule : ModuleBase<SocketCommandContext>
+    class ConfigModule : ModuleBase<SocketCommandContext>
     {
 
         private const string command = "Configure";

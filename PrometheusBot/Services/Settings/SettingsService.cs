@@ -8,7 +8,7 @@ using PrometheusBot.Model;
 
 namespace PrometheusBot.Services.Settings
 {
-    public class SettingsService
+    class SettingsService
     {
         private Dictionary<string, SettingModel> _settingsInfo;
         internal DataAccess Data { get; private set; }

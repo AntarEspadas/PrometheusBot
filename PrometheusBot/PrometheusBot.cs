@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Renci.SshNet.Messages;
 using Victoria;
 
 namespace PrometheusBot
@@ -36,7 +37,8 @@ namespace PrometheusBot
 
             DiscordSocketConfig config = new()
             {
-                MessageCacheSize = 100
+                MessageCacheSize = 100,
+                GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent
             };
             _client = new(config);
 

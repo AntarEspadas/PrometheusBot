@@ -53,7 +53,7 @@ namespace PrometheusBot.Services.MessageHistory
             }
         }
 
-        public async Task AddDeletedAsync(Cacheable<IMessage, ulong> deleted, ISocketMessageChannel channel)
+        public async Task AddDeletedAsync(Cacheable<IMessage, ulong> deleted, Cacheable<IMessageChannel, ulong> channel)
         {
             if (deleted.HasValue)
             {
