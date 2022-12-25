@@ -38,7 +38,7 @@ namespace PrometheusBot
             DiscordSocketConfig config = new()
             {
                 MessageCacheSize = 100,
-                GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent
+                GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent | GatewayIntents.GuildPresences
             };
             _client = new(config);
 
