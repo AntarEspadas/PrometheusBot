@@ -9,8 +9,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Victoria;
-using Victoria.Enums;
-using Victoria.EventArgs;
+using Victoria.Node;
+using Victoria.Node.EventArgs;
+using Victoria.Player;
 using Victoria.Responses.Search;
 
 namespace PrometheusBot.Services.Music
@@ -18,18 +19,18 @@ namespace PrometheusBot.Services.Music
     public class MusicService
     {
         private LavaNode _lavaNode;
-        private readonly Dictionary<LavaPlayer, PlayerInfo> _info = new();
+        private readonly Dictionary<LavaPlayer<LavaTrack>, PlayerInfo> _info = new();
 
         public MusicService(LavaNode lavaNode)
         {
             _lavaNode = lavaNode;
-            _lavaNode.OnTrackEnded += OnTrackEndedAsync;
+            _lavaNode.OnTrackEnd += OnTrackEndAsync;
         }
 
-        public async Task OnTrackEndedAsync(TrackEndedEventArgs args)
+        private async Task OnTrackEndAsync(TrackEndEventArg<LavaPlayer<LavaTrack>, LavaTrack> args)
         {
             var player = args.Player;
-            var queue = player.Queue;
+            var queue = player.Vueue;
             if (queue is null) return;
             var playerInfo = _info[player];
 
@@ -87,7 +88,7 @@ namespace PrometheusBot.Services.Music
             if (!_lavaNode.HasPlayer(context.Guild))
                 await JoinAsync(context);
 
-            var player = _lavaNode.GetPlayer(context.Guild);
+            var player = _lavaNode.Players.First(it => it.VoiceChannel.Guild.Id == context.Guild.Id);
 
             _info[player].QueueEndedCancellationTokenSource?.Cancel();
 
@@ -172,7 +173,7 @@ namespace PrometheusBot.Services.Music
             if (!hasPlayer)
                 return CommandResult.FromError(CommandError.Unsuccessful, "Bot must be in a voice channel in order to use this command");
 
-            player.Queue.Shuffle();
+            player.Vueue.Shuffle();
             await context.Channel.SendMessageAsync("Shuffled the queue");
             return CommandResult.FromSuccess();
         }
@@ -195,25 +196,25 @@ namespace PrometheusBot.Services.Music
             return CommandResult.FromSuccess();
         }
 
-        private static async Task PlayPlaylistAsync(SocketCommandContext context, LavaPlayer player, SearchResponse search)
+        private static async Task PlayPlaylistAsync(SocketCommandContext context, LavaPlayer<LavaTrack> player, SearchResponse search)
         {
-            if (player.Track is not null || player.PlayerState == Victoria.Enums.PlayerState.Paused)
+            if (player.Track is not null || player.PlayerState == PlayerState.Paused)
             {
                 Console.WriteLine(search.Tracks.Count);
-                player.Queue.Enqueue(search.Tracks);
+                player.Vueue.Enqueue(search.Tracks);
                 await context.Channel.SendMessageAsync($"Playlist `{search.Playlist.Name}` Added to queue");
             }
             var first = search.Tracks.First();
-            player.Queue.Enqueue(search.Tracks.Skip(1));
+            player.Vueue.Enqueue(search.Tracks.Skip(1));
             _ = context.Channel.SendMessageAsync($"Now playing `{first.Title}`\nThe rest of the playlist was added to the queue");
             await player.PlayAsync(first);
         }
 
-        private static async Task PlaySongAsync(SocketCommandContext context, LavaPlayer player, LavaTrack track)
+        private static async Task PlaySongAsync(SocketCommandContext context, LavaPlayer<LavaTrack> player, LavaTrack track)
         {
-            if (player.Track is not null || player.PlayerState == Victoria.Enums.PlayerState.Paused)
+            if (player.Track is not null || player.PlayerState == PlayerState.Paused)
             {
-                player.Queue.Enqueue(track);
+                player.Vueue.Enqueue(track);
                 await context.Channel.SendMessageAsync($"`{track.Title}` added to queue");
                 return;
             }

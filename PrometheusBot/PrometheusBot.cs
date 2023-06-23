@@ -14,8 +14,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Renci.SshNet.Messages;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Victoria;
+using Victoria.Node;
 
 namespace PrometheusBot
 {
@@ -76,8 +78,9 @@ namespace PrometheusBot
             LocalSettingsService localSettings,
             SettingsService settings)
         {
-
+            var lavaNodeLogger = new Logger<LavaNode>(new NullLoggerFactory());
             var services = new ServiceCollection()
+                .AddSingleton<ILogger<LavaNode>>(lavaNodeLogger)
                 .AddSingleton(client)
                 .AddSingleton(commands)
                 .AddSingleton(nonStandardCommands)

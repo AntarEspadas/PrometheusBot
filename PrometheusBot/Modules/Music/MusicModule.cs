@@ -9,7 +9,6 @@ using System.IO;
 using Victoria;
 using Victoria.Responses.Search;
 using System.Linq;
-using Victoria.EventArgs;
 using PrometheusBot.Services.Music;
 
 namespace PrometheusBot.Modules.Music
